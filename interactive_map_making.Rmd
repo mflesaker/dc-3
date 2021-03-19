@@ -1,0 +1,43 @@
+---
+title: "interactive_map"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(leaflet)
+library(lubridate)
+```
+
+
+```{r, warning = FALSE, message = FALSE}
+## load sensor data
+
+sensor_data <- read_csv("Sensor Data.csv")
+
+sensor_data_clean <- sensor_data %>%
+  rename(
+    time = `Date Time`
+  ) %>%
+  mutate(time = mdy_hm(time))
+```
+
+
+```{r, warning = FALSE, message = FALSE}
+## load meterological data
+
+weather_data <- read_csv("Meteorological Data.csv")
+
+weather_data_clean <- weather_data %>%
+  rename(
+    time = Date 
+  ) %>%
+  mutate(time = mdy_hm(time))
+```
+
+
+
+
+
+
+
