@@ -70,7 +70,7 @@ Important data description: important_locations is a data frame with four variab
 
 ### jpeg package idea and readJPEG idea and syntax from https://www.rdocumentation.org/packages/jpeg/versions/0.1-8.1/topics/readJPEG --------
 
-map <- readJPEG("Documents/Junior/DC3-data/Sensor Data/MapLargeLabels.jpg") 
+map <- readJPEG("MapLargeLabels.jpg") 
 
 ## --------
 ```
@@ -101,7 +101,7 @@ After I got the map in R and realized that doing so what unnecessary, I decided 
 
 ## first, downloading the sensor data into R
 
-sensor_data <- read_csv("Documents/Junior/DC3-data/Sensor Data/Sensor Data.csv")
+sensor_data <- read_csv("Sensor Data.csv")
 
 sensor_data_clean <- sensor_data %>%
   rename(
