@@ -1,0 +1,328 @@
+---
+title: "DC3"
+output: html_document
+---
+
+```{r, message = FALSE, warning = FALSE}
+library(lubridate)
+library(tidyverse)
+library(jpeg)
+library(ggpubr)
+library(plotly)
+```
+
+## Sensor and factory locations
+
+To analyze the data, I first (manually) loaded the factory and sensor locations into R. I saw that these were available in a Word document, and I thought that the chemical/sensor data would not be particularly useful without knowing which sensors are near which factories. 
+
+```{r}
+
+## manually entering in the locations of the factories, which come from "Data Descriptions for Sensor Data.docx", in the Sensor Data file 
+
+## first, manually entering in the factory names
+
+factories <- data.frame(c("Roadrunner", "Kasios", "Radiance", "Indigo"))%>%
+  rename(location_name = c..Roadrunner....Kasios....Radiance....Indigo..)
+
+## then, manually entering in the X coordinates
+
+locationsX <- data.frame(c(89, 90, 109, 120)) %>%
+  rename(X = c.89..90..109..120.)
+
+## then, manually entering in the Y coordinates
+
+locationsY <- data.frame(c(27, 21, 26, 22)) %>%
+  rename(Y = c.27..21..26..22.)
+
+## finally, putting the three columns together so that the rows match up
+
+factory_locations <- cbind(factories, locationsX, locationsY) %>%
+  mutate(location_type = "factory")
+
+## manually entering in the locations of the sensors, which come from the "Data Descriptions for Sensor Data.docx", in the Sensor Data file
+
+## first, manually entering in the name of the sensors
+
+name <- data.frame(c("Sensor 1","Sensor 2","Sensor 3","Sensor 4","Sensor 5","Sensor 6","Sensor 7","Sensor 8","Sensor 9")) %>%
+  rename(location_name = c..Sensor.1....Sensor.2....Sensor.3....Sensor.4....Sensor.5...)
+
+## next, manually entering in the X locations of each sensor
+
+sensorLocX <- data.frame(c(62, 66, 76, 88, 103, 102, 89, 74, 119)) %>%
+  rename(X = c.62..66..76..88..103..102..89..74..119.)
+
+## then, manually entering in the Y locations of each sensor
+
+sensorLocY <- data.frame(c(21, 35, 41, 45, 43, 22, 3, 7, 42)) %>%
+  rename(Y = c.21..35..41..45..43..22..3..7..42.)
+
+## finally, putting the three columns together to form a data frame
+
+sensor_locations <- cbind(name, sensorLocX, sensorLocY) %>%
+  mutate(location_type = "censor")
+
+important_locations <-rbind(factory_locations, sensor_locations)
+```
+
+Important data description: important_locations is a data frame with four variables: location_name (what is the place whose location is noted), X (the x-coordinate of the place), Y (the y-coordinate of the place), and location_type (whether this location is a sensor or a factory). There are thirteen rows, corresponding with thirteen locations -- 9 sensors, and 4 factories. 
+
+```{r}
+
+### jpeg package idea and readJPEG idea and syntax from https://www.rdocumentation.org/packages/jpeg/versions/0.1-8.1/topics/readJPEG --------
+
+map <- readJPEG("Documents/Junior/DC3-data/Sensor Data/MapLargeLabels.jpg") 
+
+## --------
+```
+
+Next, I plotted the factories and sensors on the map. I realized after doing so that this was an unnecessary step, as the sensors and factories are already plotted on the map. However, loading the map into R and plotting locations by X,Y coordinates may be useful later, so I will keep it in this Rmd. 
+
+```{r}
+## ggpubr and background_image function ideas and syntax come from code for DC-2 (file entitled dc-2-dataclean.Rmd, submitted by Michelle Flesaker); this code originally came from the following sources ---------------------
+## https://rpkgs.datanovia.com/ggpubr/reference/background_image.html
+## https://github.com/kassambara/ggpubr/blob/master/R/background_image.R
+## https://www.edureka.co/community/58999/add-image-background-to-ggplot
+## https://www.engineeringbigdata.com/how-to-add-a-background-image-in-ggplot2-with-r/
+
+ggplot(important_locations, aes(x = X, y = Y, color = location_type)) +
+  background_image(map) +
+  geom_point(size = 2) +
+  scale_y_continuous(limits = c(0,200)) +
+  scale_x_continuous(limits = c(0,200))
+
+## -------------------
+```
+
+## Analyzing sensor data by time to detect initial patterns
+
+After I got the map in R and realized that doing so what unnecessary, I decided to download the sensor data and load it into R. I did not have a particular reason for choosing this data first. Then, I used the lubridate function mdy_hm() to ensure that R recognized the time variable as a time and not as a string. 
+
+```{r, warning = FALSE, message = FALSE}
+
+## first, downloading the sensor data into R
+
+sensor_data <- read_csv("Documents/Junior/DC3-data/Sensor Data/Sensor Data.csv")
+
+sensor_data_clean <- sensor_data %>%
+  rename(
+    time = `Date Time`
+  ) %>%
+  mutate(time = mdy_hm(time))
+
+```
+
+Important data description: sensor_data_clean is a data frame with four variables: Chemical (which of the four chemicals -- AGOC-3A, Chlorodinine, Appluimonia, and Methylosmolene -- was detected), Monitor (which of the 9 monitors detected the chemical), time (at what time, in y-m-d h:m:s was the chemical detected), and Reading (how much of the chemical was detected in parts per million). There are 79,423 rows, corresponding with that many sensor readings. 
+
+First, I decided to make one big visualization of the data, because I was not sure exactly what was going on. In this plot, I looked at how the amount of a chemical sensed changed over time, with different chemicals in different colors and different sensors in their own faceted plots. 
+
+```{r}
+readings <- ggplot(sensor_data_clean, aes(x = time, y = Reading, color = Chemical)) +
+  geom_line() +
+  scale_x_datetime(breaks = "6 months") +
+  facet_wrap(~as.factor(Monitor)) +
+  scale_y_continuous("Reading in ppm")
+
+ggplotly(readings)
+```
+
+What is clear looking at these plots is that there is missing data for some months: the three months of data collection described in the data documentation do not seem to have been continuous. Looking at the data this way, there appear to be some anomalies, but it would be easier to see the data if we broke it up into the three discrete times. It also seems as though we can't see anomalies for some of the chemicals because of the differences in scales.
+
+To break up the data by month, I first investigated which days were available in the data. 
+
+```{r}
+## grouped the sensor data by month to see which months were present
+
+sensor_data_clean %>%
+  group_by(month(time)) %>%
+  summarize(
+    N = n()
+  )
+
+## grouped the sensor data by day to see which days in each month were present
+
+sensor_data_clean %>%
+  group_by(date(time)) %>%
+  summarize(
+    N = n()
+  )
+```
+
+It appears that we have sensor data for April 1st - 30th, August 1st - 31st, and December 1st - 31st
+
+So, I knew that I needed to break up the plots by chemical (or re-scale the readings of the chemicals that only appear in smaller amounts), and by month (to increase visibility of data). I focus my analysis on anomalies in Chlorodinine and Methylsmolene because, according to the "Backgrounder on Monitoring in the Lekagul Wildlife Preserve Area" word document these two are the most harmful to human health. This data is available if further evidence suggests that we should analyze these chemicals. 
+
+- I am particularly suspicious of Methylsmolene, because, in the "Backgrounder on Monitoring in the Lekagul Wildlife Preserve Area.docx" document, it says that Methylsmolene "is a trade name for a family of **volatile organic solvents**." This is relevant because, in "Mistford Manufacturing Companies.docx" company, the description for Radiance ColourTek implies past issues with volatile organic solvents: "Radiance out marketed all competitors for three decades until **manufacturing process issues began to tarnish their reputation**. 'We were challenged,' said Donner. 'Polishing up our pearlescent pigments caused us to lose luster, but **now we have the lowest VOCs (volatile organic compounds) in the industry**!'"
+
+To make the plots for each month and chemical (AGOC-3A and Appluimonia temporarily commented out), I made a function that takes in a month and chemical and creates a ggplotly graph with time on the x-axis and the amount of the chemical in ppm on the y-axis
+
+```{r}
+
+## I am aware that these functions are weirdly formatted and put together: I wanted to make one make_graph function where the breaks and limits were conditional on which chemical was put into the function, but I couldn't figure out how to make that work and decided to prioritize having standardized axes rather than simpler code
+
+## Refresher on function syntax in R from https://swcarpentry.github.io/r-novice-inflammation/02-func-R/ -------
+
+make_graph <- function(month1, chemical1){
+  dataname <- sensor_data_clean %>%
+  filter(month(time) == month1) %>%
+  filter(Chemical == chemical1) %>%
+  mutate(Monitor = as.factor(Monitor))
+
+  plot <- ggplot(dataname, aes(x = time, y = Reading, color = Monitor)) +
+    geom_line() +
+    scale_x_datetime(date_labels = "%m/%d") +
+    scale_y_continuous(
+      name = paste(chemical1, "reading in ppm", sep = " ")) +
+    scale_color_brewer(palette = "Set1")
+  
+  ggplotly(plot)
+}
+
+make_Chloro_graph <- function(month1){
+  dataname <- sensor_data_clean %>%
+  filter(month(time) == month1) %>%
+  filter(Chemical == "Chlorodinine") %>%
+  mutate(Monitor = as.factor(Monitor))
+
+  plot <- ggplot(dataname, aes(x = time, y = Reading, color = Monitor)) +
+    geom_line() +
+    scale_x_datetime(date_labels = "%m/%d") +
+    scale_y_continuous(
+      name = paste("Chlorodinine", "reading in ppm", sep = " "),
+      limits = c(0,20),
+      breaks = c(0,5,10,15,20))+
+    scale_color_brewer(palette = "Set1")
+  
+  ggplotly(plot)
+}
+
+make_Methylosmolene_graph <- function(month1){
+  dataname <- sensor_data_clean %>%
+  filter(month(time) == month1) %>%
+  filter(Chemical == "Methylosmolene") %>%
+  mutate(Monitor = as.factor(Monitor))
+
+  plot <- ggplot(dataname, aes(x = time, y = Reading, color = Monitor)) +
+    geom_line() +
+    scale_x_datetime(date_labels = "%m/%d") +
+    scale_y_continuous(
+      name = paste("Methylosmolene", "reading in ppm", sep = " "),
+      breaks = c(0,25,50,75),
+      limits = c(0,100))+
+    scale_color_brewer(palette = "Set1")
+  
+  ggplotly(plot)
+}
+
+## ------------------------------
+```
+
+My goal here is to extract any significant dates and clear anomalies in sensor data (big spikes, trends/patterns, long periods with missing data) to inform a more specific analysis later.
+
+## April Analysis of Chlorodinine and Methylosmolene Readings by Time and Monitor
+
+```{r}
+## april_AGOC <- make_graph(4, "AGOC-3A")
+## april_Appluimonia <- make_graph(4, "Appluimonia")
+april_Chlorodinine <- make_Chloro_graph(4)
+april_Methylosmolene <- make_Methylosmolene_graph(4)
+
+# april_AGOC
+# april_Appluimonia
+april_Chlorodinine
+april_Methylosmolene
+```
+
+Observations:
+ - all monitors seem to work for Chlorodinine (none on first glance seem to be missing considerable data)
+- all monitors seem to work for Methylosmolene (none on first glance seem to be missing considerable data)
+ - for Methylosmolene, monitor 2 has spike on 4/17, monitor 4 has spike on 4/7, monitor 6 has several distinct spikes with otherwise very little day-to-day variation, monitor 7 has spikes on 4/14, 4/15, 4/19, monitor 8 has one distinct spike on 4/15, monitor 9 hs one very, very distinct spike on 4/11
+ - for Chlorodinine, monitor 1 has spike on 4/16, monitor 5 has two distinct spikes on 4/8 and 4/41, monitor 6 has several large spikes distinct from day-to-day noise, monitor 7 has a spike on 4/26, monitor 8 has a spike on 4/14 and one on 4/26
+
+### April Summary 
+
+Chlorodinine days > 10 ppm
+ - Monitor 6: 4/4, 4/9, 4/27
+ 
+ Methylosmolene days > 40 ppm (**>75 ppm**)
+ - Monitor 6: **4/2 (88.5 ppm)**, 4/3, **4/9 (94.3 ppm)**, 4/25
+ - Monitor 7: 4/14, 4/15
+ - Monitor 9: 4/11
+
+## August Analysis of Chlorodinine and Methylosmolene Readings by Time and Monitor
+
+```{r}
+## august_AGOC <- make_graph(8, "AGOC-3A")
+## august_Appluimonia <- make_graph(8, "Appluimonia")
+august_Chlorodinine <- make_Chloro_graph(8)
+august_Methylosmolene <- make_Methylosmolene_graph(8)
+
+## august_AGOC
+## august_Appluimonia
+august_Chlorodinine
+august_Methylosmolene
+```
+
+Observations
+ - all monitors seem to work for Chlorodinine (none on first glance seem to be missing considerable data)
+ - all monitors seem to work for Methylosmolene (none on first glance seem to be missing considerable data)
+ - for Chlorodinine, monitor 1 has distinct spike 8/2, monitor 2 has two distinct spikes - 8/2, 8/20; others more regularly noisy
+ - for Methylosmolene, monitor 2 has two very distinct spikes, 8/2, 8/20, monitor 3 has a very distinct spike 8/1, monitor 4 has a distinct spike 8/10, monitor 6 has distinct spikes 8/16 and 8/18
+
+### August Summary
+
+Chlorodinine days > 10 ppm (**> 15 ppm**)
+ - Monitor 2: **8/2 (15.7 ppm)**
+ - Monitor 5: 8/16
+ - Monitor 6: 8/8, 8/11, 8/27
+ 
+ Methylosmolene days > 40 ppm (**>75 ppm**)
+ - Monitor 2: 8/2, 8/20
+ - Monitor 3: **8/1 (76.0 ppm)**
+ - Monitor 5: 8/10 
+
+## December Analysis of Chlorodinine and Methylosmolene Readings by Time and Monitor
+
+```{r}
+## december_AGOC <- make_graph(12, "AGOC-3A")
+## december_Appluimonia <- make_graph(12, "Appluimonia")
+december_Chlorodinine <- make_Chloro_graph(12)
+december_Methylosmolene <- make_Methylosmolene_graph(12)
+
+## december_AGOC
+## december_Appluimonia
+december_Chlorodinine
+december_Methylosmolene
+```
+
+Observations:
+
+
+
+### December Summary
+
+Chlorodinine days > 10 ppm (**> 15 ppm**)
+ - Monitor 2: 
+ - Monitor 5: 
+ - Monitor 6: 
+ 
+ Methylosmolene days > 40 ppm (**>75 ppm**)
+ - Monitor 2: 
+ - Monitor 3: 
+ - Monitor 5: 
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
