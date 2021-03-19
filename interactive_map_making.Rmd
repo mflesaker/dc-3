@@ -3,12 +3,11 @@ title: "interactive_map"
 output: html_document
 ---
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(leaflet)
 library(lubridate)
 ```
-
 
 ```{r, warning = FALSE, message = FALSE}
 ## load sensor data
@@ -24,7 +23,7 @@ sensor_data_clean <- sensor_data %>%
 
 
 ```{r, warning = FALSE, message = FALSE}
-## load meterological data
+## load meteorological data
 
 weather_data <- read_csv("Meteorological Data.csv")
 
@@ -34,6 +33,31 @@ weather_data_clean <- weather_data %>%
   ) %>%
   mutate(time = mdy_hm(time))
 ```
+
+
+```{r, message = FALSE, warning = FALSE}
+## load traffic data
+
+traffic_data <- read_csv("Lekagul Sensor Data.csv")
+
+traffic_data_clean <- traffic_data %>%
+  rename(
+    time = Timestamp
+  ) %>%
+  mutate(time = ymd_hms(time))
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
