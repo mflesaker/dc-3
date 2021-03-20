@@ -295,24 +295,23 @@ december_Methylosmolene
 ```
 
 Observations:
-
+ - all monitors seem to work for Chlorodinine (none on first glance seem to be missing considerable data)
+ - all monitors seem to work for Methylosmolene (none on first glance seem to be missing considerable data)
+ - For Chlorodinine, monitor 4 has a few distinct spikes, the biggest one at 12/18, monitor 7 has one distinct spike at 12/5; others more regularly noisy
+ - For Methylosmolene, monitor 8 has one distinct spike at 12/7, monitor 7 has two distinct spikes, one at 12/5 and one at 12/6, monitor 6 has many distinct spikes, monitors 1, 3, and 5 have a few distinct spikes each
 
 
 ### December Summary
 
 Chlorodinine days > 10 ppm (**> 15 ppm**)
- - Monitor 2: 
- - Monitor 5: 
- - Monitor 6: 
+ - Monitor 4: 12/18 
+ - Monitor 6: 12/6, **12/23 (15.0 ppm)**
+ - Monitor 7: 12/5
  
  Methylosmolene days > 40 ppm (**>75 ppm**)
- - Monitor 2: 
- - Monitor 3: 
- - Monitor 5: 
-
-```{r}
-
-```
+ - Monitor 3: 12/12
+ - Monitor 6: **12/2 (85.0 ppm)**, 12/6, 12/11, 12/24
+ - Monitor 7: 12/5
 
 
 
