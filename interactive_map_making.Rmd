@@ -228,6 +228,7 @@ location_names <- traffic_data_clean%>%
 
 ```{r}
 # How to add gate name in the hover info
+# how to add background image
 traffic_data_coord%>%
   filter(car_id == "20150204100226-134")%>%
   plot_ly(
