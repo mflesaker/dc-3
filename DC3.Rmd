@@ -59,7 +59,7 @@ sensorLocY <- data.frame(c(21, 35, 41, 45, 43, 22, 3, 7, 42)) %>%
 ## finally, putting the three columns together to form a data frame
 
 sensor_locations <- cbind(name, sensorLocX, sensorLocY) %>%
-  mutate(location_type = "censor")
+  mutate(location_type = "sensor")
 
 important_locations <-rbind(factory_locations, sensor_locations)
 ```
