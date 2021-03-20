@@ -195,7 +195,16 @@ traffic_data_coord <- traffic_data_clean%>%
                                       ifelse(gate_name == "general-gate5", 130,
                                              ifelse(gate_name == "general-gate6", 140,
                                                     ifelse(gate_name == "general-gate7", 60,
-                                                                        0))))))))))))))))))))))))))))))))%>%
+                                                      
+          ifelse(gate_name == "ranger-base", 130,
+              ifelse(gate_name == "ranger-stop0", 90,
+                     ifelse(gate_name== "ranger-stop1", 13,
+                        ifelse(gate_name=="ranger-stop2", 80,
+                               ifelse(gate_name == "ranger-stop3", 152,
+                                      ifelse(gate_name == "ranger-stop4", 10,
+                                             ifelse(gate_name == "ranger-stop5", 154,
+                                                    ifelse(gate_name == "ranger-stop6", 125,
+                                                           ifelse(gate_name == "ranger-stop7", 101,                                0)))))))))))))))))))))))))))))))))))))))))%>%
   mutate(Y = ifelse(gate_name == "camping5", 75,
                     ifelse(gate_name == "camping0", 160,
                            ifelse(gate_name== "camping1", 155,
@@ -227,8 +236,17 @@ traffic_data_coord <- traffic_data_clean%>%
                                     ifelse(gate_name == "general-gate5", 90,
                                            ifelse(gate_name == "general-gate6", 57,
                                                   ifelse(gate_name == "general-gate7", 51,
-                                                                      
-                                                                      0))))))))))))))))))))))))))))))))
+                                                         
+          ifelse(gate_name == "ranger-base", 20,
+              ifelse(gate_name == "ranger-stop0", 191,
+                     ifelse(gate_name== "ranger-stop1", 182,
+                        ifelse(gate_name=="ranger-stop2", 170,
+                               ifelse(gate_name == "ranger-stop3", 157,
+                                      ifelse(gate_name == "ranger-stop4", 102,
+                                             ifelse(gate_name == "ranger-stop5", 80,
+                                                    ifelse(gate_name == "ranger-stop6", 49,
+                                                           ifelse(gate_name == "ranger-stop7", 46,
+                                                                      0)))))))))))))))))))))))))))))))))))))))))
 ```
 
 
