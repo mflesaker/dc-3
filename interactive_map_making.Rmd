@@ -183,7 +183,19 @@ traffic_data_coord <- traffic_data_clean%>%
                                                    ifelse(gate_name == "camping6",20,
                                                           ifelse(gate_name == "camping7", 50,
                                                                  ifelse(gate_name == "camping8", 157,
-                                                                        0))))))))))
+                                                                        0))))))))))%>%
+  mutate(X = ifelse(gate_name == "entrance0", 55,
+                  ifelse(gate_name == "entrance1", 9,
+                         ifelse(gate_name== "entrance2", 192,
+                            ifelse(gate_name=="entrance3", 115,
+                                   ifelse(gate_name == "entrance4", 146,
+                                                                      0))))))%>%
+  mutate(Y = ifelse(gate_name == "entrance0", 196,
+                ifelse(gate_name == "entrance1", 136,
+                       ifelse(gate_name== "entrance2", 113,
+                          ifelse(gate_name=="entrance3", 26,
+                                 ifelse(gate_name == "entrance4", 8,
+                                                                    0))))))
 ```
 
 
