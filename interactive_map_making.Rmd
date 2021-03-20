@@ -1,6 +1,8 @@
 ---
 title: "interactive_map"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, message = FALSE, warning = FALSE}
@@ -47,14 +49,85 @@ traffic_data_clean <- traffic_data %>%
   mutate(time = ymd_hms(time))
 ```
 
+Dates to look at:
+
+4/2/16, monitor 6, Methylosmolene
+4/9/16, monitor 6, Methylosmolene
+8/1/16, monitor 3, Methylosmolene
+8/2/16, monitor 2, Chlorodinine
+12/2/16, monitor 6, Methylosmolene
+12/23/16, monitor 6, Chlorodinine
 
 
+```{r}
+map2 <- readJPEG("Lekagul Roadways labeled v2 copy.jpg") 
+```
+
+```{r}
+
+## manually entering in the locations of the factories, which come from "Data Descriptions for Sensor Data.docx", in the Sensor Data file 
+
+## first, manually entering in the factory names
+
+factories <- data.frame(c("Roadrunner", "Kasios", "Radiance", "Indigo"))%>%
+  rename(location_name = c..Roadrunner....Kasios....Radiance....Indigo..)
+
+## then, manually entering in the X coordinates
+
+locationsX <- data.frame(c(89, 90, 109, 120)) %>%
+  rename(X = c.89..90..109..120.)
+
+## then, manually entering in the Y coordinates
+
+locationsY <- data.frame(c(27, 21, 26, 22)) %>%
+  rename(Y = c.27..21..26..22.)
+
+## finally, putting the three columns together so that the rows match up
+
+factory_locations <- cbind(factories, locationsX, locationsY) %>%
+  mutate(location_type = "factory")
+
+## manually entering in the locations of the sensors, which come from the "Data Descriptions for Sensor Data.docx", in the Sensor Data file
+
+## first, manually entering in the name of the sensors
+
+name <- data.frame(c("Sensor 1","Sensor 2","Sensor 3","Sensor 4","Sensor 5","Sensor 6","Sensor 7","Sensor 8","Sensor 9")) %>%
+  rename(location_name = c..Sensor.1....Sensor.2....Sensor.3....Sensor.4....Sensor.5...)
+
+## next, manually entering in the X locations of each sensor
+
+sensorLocX <- data.frame(c(62, 66, 76, 88, 103, 102, 89, 74, 119)) %>%
+  rename(X = c.62..66..76..88..103..102..89..74..119.)
+
+## then, manually entering in the Y locations of each sensor
+
+sensorLocY <- data.frame(c(21, 35, 41, 45, 43, 22, 3, 7, 42)) %>%
+  rename(Y = c.21..35..41..45..43..22..3..7..42.)
+
+## finally, putting the three columns together to form a data frame
+
+sensor_locations <- cbind(name, sensorLocX, sensorLocY) %>%
+  mutate(location_type = "sensor")
+
+important_locations <-rbind(factory_locations, sensor_locations)
+```
 
 
+```{r}
+## ggpubr and background_image function ideas and syntax come from code for DC-2 (file entitled dc-2-dataclean.Rmd, submitted by Michelle Flesaker); this code originally came from the following sources ---------------------
+## https://rpkgs.datanovia.com/ggpubr/reference/background_image.html
+## https://github.com/kassambara/ggpubr/blob/master/R/background_image.R
+## https://www.edureka.co/community/58999/add-image-background-to-ggplot
+## https://www.engineeringbigdata.com/how-to-add-a-background-image-in-ggplot2-with-r/
 
+ggplot(important_locations, aes(x = X, y = Y, color = location_type)) +
+  background_image(map2) +
+  geom_point(size = 2) +
+  scale_y_continuous(limits = c(0,200)) +
+  scale_x_continuous(limits = c(0,200))
 
-
-
+## -------------------
+```
 
 
 
