@@ -172,8 +172,30 @@ traffic_data_coord <- traffic_data_clean%>%
                                             ifelse(gate_name == "camping4", 48,
                                                    ifelse(gate_name == "camping6",155,
                                                           ifelse(gate_name == "camping7", 190,
-                                                                 ifelse(gate_name == "camping8", 195,
-                                                                        0))))))))))%>%
+                                                                 ifelse(gate_name == "camping8", 195,                                          
+          ifelse(gate_name == "entrance0", 55,
+                  ifelse(gate_name == "entrance1", 9,
+                         ifelse(gate_name== "entrance2", 192,
+                            ifelse(gate_name=="entrance3", 115,
+                                   ifelse(gate_name == "entrance4", 146,
+          ifelse(gate_name == "gate0", 60,
+                ifelse(gate_name == "gate1", 55,
+                       ifelse(gate_name== "gate2", 20,
+                          ifelse(gate_name=="gate3", 153,
+                                 ifelse(gate_name == "gate4", 170,
+                                        ifelse(gate_name == "gate5", 135,
+                                               ifelse(gate_name == "gate6", 117,
+                                                      ifelse(gate_name == "gate7", 96,
+                                                             ifelse(gate_name == "gate8", 143,
+          ifelse(gate_name == "general-gate0", 110,
+              ifelse(gate_name == "general-gate1", 60,
+                     ifelse(gate_name== "general-gate2", 104,
+                        ifelse(gate_name=="general-gate3", 194,
+                               ifelse(gate_name == "general-gate4", 65,
+                                      ifelse(gate_name == "general-gate5", 130,
+                                             ifelse(gate_name == "general-gate6", 140,
+                                                    ifelse(gate_name == "general-gate7", 60,
+                                                                        0))))))))))))))))))))))))))))))))%>%
   mutate(Y = ifelse(gate_name == "camping5", 75,
                     ifelse(gate_name == "camping0", 160,
                            ifelse(gate_name== "camping1", 155,
@@ -183,30 +205,12 @@ traffic_data_coord <- traffic_data_clean%>%
                                                    ifelse(gate_name == "camping6",20,
                                                           ifelse(gate_name == "camping7", 50,
                                                                  ifelse(gate_name == "camping8", 157,
-                                                                        0))))))))))%>%
-  mutate(X = ifelse(gate_name == "entrance0", 55,
-                  ifelse(gate_name == "entrance1", 9,
-                         ifelse(gate_name== "entrance2", 192,
-                            ifelse(gate_name=="entrance3", 115,
-                                   ifelse(gate_name == "entrance4", 146,
-                                                                      0))))))%>%
-  mutate(Y = ifelse(gate_name == "entrance0", 196,
+          ifelse(gate_name == "entrance0", 196,
                 ifelse(gate_name == "entrance1", 136,
                        ifelse(gate_name== "entrance2", 113,
                           ifelse(gate_name=="entrance3", 26,
                                  ifelse(gate_name == "entrance4", 8,
-                                                                    0))))))%>%
-  mutate(X = ifelse(gate_name == "gate0", 60,
-                ifelse(gate_name == "gate1", 55,
-                       ifelse(gate_name== "gate2", 20,
-                          ifelse(gate_name=="gate3", 153,
-                                 ifelse(gate_name == "gate4", 170,
-                                        ifelse(gate_name == "gate5", 135,
-                                               ifelse(gate_name == "gate6", 117,
-                                                      ifelse(gate_name == "gate7", 96,
-                                                             ifelse(gate_name == "gate8", 143,
-                                                                    0))))))))))%>%
-    mutate(Y = ifelse(gate_name == "gate0", 170,
+           ifelse(gate_name == "gate0", 170,
                 ifelse(gate_name == "gate1", 160,
                        ifelse(gate_name== "gate2", 150,
                           ifelse(gate_name=="gate3", 143,
@@ -215,17 +219,7 @@ traffic_data_coord <- traffic_data_clean%>%
                                                ifelse(gate_name == "gate6", 45,
                                                       ifelse(gate_name == "gate7", 35,
                                                              ifelse(gate_name == "gate8", 15,
-                                                                    0))))))))))%>%
-    mutate(X = ifelse(gate_name == "general-gate0", 110,
-              ifelse(gate_name == "general-gate1", 60,
-                     ifelse(gate_name== "general-gate2", 104,
-                        ifelse(gate_name=="general-gate3", 194,
-                               ifelse(gate_name == "general-gate4", 65,
-                                      ifelse(gate_name == "general-gate5", 130,
-                                             ifelse(gate_name == "general-gate6", 140,
-                                                    ifelse(gate_name == "general-gate7", 60,
-                                                                  0)))))))))%>%
-    mutate(Y = ifelse(gate_name == "general-gate0", 199,
+          ifelse(gate_name == "general-gate0", 199,
             ifelse(gate_name == "general-gate1", 180,
                    ifelse(gate_name== "general-gate2", 170,
                       ifelse(gate_name=="general-gate3", 149,
@@ -233,8 +227,8 @@ traffic_data_coord <- traffic_data_clean%>%
                                     ifelse(gate_name == "general-gate5", 90,
                                            ifelse(gate_name == "general-gate6", 57,
                                                   ifelse(gate_name == "general-gate7", 51,
-                                                                0)))))))))
-
+                                                                      
+                                                                      0))))))))))))))))))))))))))))))))
 ```
 
 
