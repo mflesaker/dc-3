@@ -227,6 +227,7 @@ location_names <- traffic_data_clean%>%
 # Tracking car id 20150204100226-134
 
 ```{r}
+# How to add gate name in the hover info
 traffic_data_coord%>%
   filter(car_id == "20150204100226-134")%>%
   plot_ly(
@@ -234,6 +235,10 @@ traffic_data_coord%>%
     y = ~Y,
     color = ~factor(car_id),
     frame = ~factor(time),
+    images = list(
+source = "https://github.com/mflesaker/dc-3/blob/master/Lekagul%20Roadways%20labeled%20v2%20copy.jpg"
+),
+
     type = 'scatter',
     mode = 'markers'
   )
