@@ -119,9 +119,11 @@ xlabs <- c(0,25,50,75,100,125,150,175,)
 ggplot(important_locations, aes(x = X, y = Y, color = location_type)) +
   background_image(map2) +
   geom_point(size = 2) +
-  scale_y_continuous(limits = c(0,200), breaks = c(0, 200, by = 10), 1) +
-  scale_x_continuous(limits = c(0,200), breaks = c(0,200, by = 10), 1)
+  scale_y_continuous(limits = c(0,200)) +
+  scale_x_continuous(limits = c(0,200))
 
+#, breaks = c(0, 200, by = 10), 1
+#, breaks = c(0,200, by = 10), 1
 #remove breaks
 
   scale_x_continuous(expand = c(0, 0), 
@@ -175,12 +177,12 @@ traffic_data_coord <- traffic_data_clean%>%
   mutate(Y = ifelse(gate_name == "camping5", 75,
                     ifelse(gate_name == "camping0", 160,
                            ifelse(gate_name== "camping1", 155,
-                              ifelse(gate_name=="camping2", ,
-                                     ifelse(gate_name == "camping3", 46,
-                                            ifelse(gate_name == "camping4", 48,
-                                                   ifelse(gate_name == "camping6",155,
-                                                          ifelse(gate_name == "camping7", 190,
-                                                                 ifelse(gate_name == "camping8", 195,
+                              ifelse(gate_name=="camping2", 140,
+                                     ifelse(gate_name == "camping3", 136,
+                                            ifelse(gate_name == "camping4", 115,
+                                                   ifelse(gate_name == "camping6",20,
+                                                          ifelse(gate_name == "camping7", 50,
+                                                                 ifelse(gate_name == "camping8", 157,
                                                                         0))))))))))
 ```
 
