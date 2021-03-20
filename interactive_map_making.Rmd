@@ -215,7 +215,25 @@ traffic_data_coord <- traffic_data_clean%>%
                                                ifelse(gate_name == "gate6", 45,
                                                       ifelse(gate_name == "gate7", 35,
                                                              ifelse(gate_name == "gate8", 15,
-                                                                    0))))))))))
+                                                                    0))))))))))%>%
+    mutate(X = ifelse(gate_name == "general-gate0", 110,
+              ifelse(gate_name == "general-gate1", 60,
+                     ifelse(gate_name== "general-gate2", 104,
+                        ifelse(gate_name=="general-gate3", 194,
+                               ifelse(gate_name == "general-gate4", 65,
+                                      ifelse(gate_name == "general-gate5", 130,
+                                             ifelse(gate_name == "general-gate6", 140,
+                                                    ifelse(gate_name == "general-gate7", 60,
+                                                                  0)))))))))%>%
+    mutate(Y = ifelse(gate_name == "general-gate0", 199,
+            ifelse(gate_name == "general-gate1", 180,
+                   ifelse(gate_name== "general-gate2", 170,
+                      ifelse(gate_name=="general-gate3", 149,
+                             ifelse(gate_name == "general-gate4", 101,
+                                    ifelse(gate_name == "general-gate5", 90,
+                                           ifelse(gate_name == "general-gate6", 57,
+                                                  ifelse(gate_name == "general-gate7", 51,
+                                                                0)))))))))
 
 ```
 
