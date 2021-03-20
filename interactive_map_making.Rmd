@@ -114,22 +114,52 @@ important_locations <-rbind(factory_locations, sensor_locations)
 
 
 ```{r}
+xlabs <- c(0,25,50,75,100,125,150,175,)
 
-p <- ggplot(important_locations, aes(x = X, y = Y, color = location_type)) +
+ggplot(important_locations, aes(x = X, y = Y, color = location_type)) +
   background_image(map2) +
   geom_point(size = 2) +
-  scale_y_continuous(limits = c(0,200)) +
-  scale_x_continuous(limits = c(0,200))
+  scale_y_continuous(limits = c(0,200), breaks = c(0, 200, by = 10), 1) +
+  scale_x_continuous(limits = c(0,200), breaks = c(0,200, by = 10), 1)
 
-p
+#remove breaks
+
+  scale_x_continuous(expand = c(0, 0), 
+                     name = NULL,
+                     breaks = xlabs,
+                     labels = c("1940", "'60", "'80", "2000")
+                     ) +
+  scale_x_continuous(breaks = round(seq(min(important_locations$x), max(important_locations$x), by = 10),1)) +
+  scale_y_continuous(breaks = round(seq(min(important_locations$y), max(important_locations$y), by = 10),1))
+
+
+  
 
 ## -------------------
 ```
 
+  grid(nx = 5, ny = nx, col = "red", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
 
+
+#p
+
+plot(1:3)
+#grid(10, 5, lwd = par("lwd"), col = "red") # grid only in y-direction
+
+## maybe change the desired number of tick marks:  par(lab = c(mx, my, 7))
+op <- par(mfcol = 1:2)
+with(important_locations,
+     {
+     plot(X, Y, col = location_type,
+          xlim = c(0, 200), ylim = c(0, 200), panel.first = grid(),
+          main = "with(iris,  plot(...., panel.first = grid(), ..) )")
+     }
+    )
+par(op)
 
 ```{r}
-# adding the camping X coordinates
+# adding the camping X and Y coordinates
 traffic_data_coord <- traffic_data_clean%>%
   rename(gate_name = `gate-name`)%>%
   mutate(X = ifelse(gate_name == "camping5", 10,
@@ -141,7 +171,22 @@ traffic_data_coord <- traffic_data_clean%>%
                                                    ifelse(gate_name == "camping6",155,
                                                           ifelse(gate_name == "camping7", 190,
                                                                  ifelse(gate_name == "camping8", 195,
+                                                                        0))))))))))%>%
+  mutate(Y = ifelse(gate_name == "camping5", 75,
+                    ifelse(gate_name == "camping0", 160,
+                           ifelse(gate_name== "camping1", 155,
+                              ifelse(gate_name=="camping2", ,
+                                     ifelse(gate_name == "camping3", 46,
+                                            ifelse(gate_name == "camping4", 48,
+                                                   ifelse(gate_name == "camping6",155,
+                                                          ifelse(gate_name == "camping7", 190,
+                                                                 ifelse(gate_name == "camping8", 195,
                                                                         0))))))))))
+```
+
+
+```{r}
+#adding entrance X coordinates
 ```
 
   mutate(Model = ifelse(Stimulus == "426789", "child",
@@ -155,7 +200,7 @@ grid(5, 5, lwd = 2, col = "red")
 
 
 ```{r}
-traffic_data_clean%>%
+location_names <- traffic_data_clean%>%
   group_by(`gate-name`)%>%
   summarize(N = n())
 ```
