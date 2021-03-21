@@ -2,7 +2,6 @@
 title: "interactive_map"
 output: html_document
 editor_options: 
-  chunk_output_type: console
 ---
 
 ```{r, message = FALSE, warning = FALSE}
@@ -87,8 +86,8 @@ factory_locations <- cbind(factories, locationsX, locationsY) %>%
 
 ## first, manually entering in the name of the sensors
 
-name <- data.frame(c("Sensor 1","Sensor 2","Sensor 3","Sensor 4","Sensor 5","Sensor 6","Sensor 7","Sensor 8","Sensor 9")) %>%
-  rename(location_name = c..Sensor.1....Sensor.2....Sensor.3....Sensor.4....Sensor.5...)
+name <- data.frame(c(1,2,3,4,5,6,7,8,9)) %>%
+  rename(monitor = c.1..2..3..4..5..6..7..8..9.)
 
 ## next, manually entering in the X locations of each sensor
 
@@ -105,16 +104,16 @@ sensorLocY <- data.frame(c(21, 35, 41, 45, 43, 22, 3, 7, 42)) %>%
 sensor_locations <- cbind(name, sensorLocX, sensorLocY) %>%
   mutate(location_type = "sensor")
 
-important_locations <-rbind(factory_locations, sensor_locations)
+# important_locations <-rbind(factory_locations, sensor_locations)
 ```
 
 
 ```{r}
-ggplot(important_locations, aes(x = X, y = Y, color = location_type)) +
-  background_image(map2) +
-  geom_point(size = 2) +
-  scale_y_continuous(limits = c(0,200)) +
-  scale_x_continuous(limits = c(0,200))
+# ggplot(important_locations, aes(x = X, y = Y, color = location_type)) +
+ # background_image(map2) +
+ # geom_point(size = 2) +
+ # scale_y_continuous(limits = c(0,200)) +
+ # scale_x_continuous(limits = c(0,200))
 
 #, breaks = c(0, 200, by = 10), 1
 #, breaks = c(0,200, by = 10), 1
@@ -235,11 +234,9 @@ sensor_locations <- cbind(name, sensorLocX, sensorLocY) %>%
 ```
 
 ```{r}
-sensor_data_w_locations_april_meth <- sensor_data_clean %>%
-  left_join(sensor_locations, by = c("Monitor" = "monitor")) %>%
-  select(-location_type) %>%
-  filter(month(time) == 4) %>%
-  filter(Chemical == "Methylosmolene")
+sensor_data_w_locations <- sensor_data_clean %>%
+   left_join(sensor_locations, by = c("Monitor" = "monitor")) %>%
+   select(-location_type)
 
 sensor_data_w_locations %>%
   group_by(X, Y) %>%
@@ -256,11 +253,11 @@ sensor_data_w_locations %>%
 ## https://www.edureka.co/community/58999/add-image-background-to-ggplot
 ## https://www.engineeringbigdata.com/how-to-add-a-background-image-in-ggplot2-with-r/
 
-# ggplot(sensor_data_w_locations, aes(x = X, y = Y, color = Chemical, size = total_reading)) +
- # background_image(map) +
- # geom_jitter(size = 2) +
- # scale_y_continuous(limits = c(0,200)) +
- # scale_x_continuous(limits = c(0,200))
+ ggplot(sensor_data_w_locations, aes(x = X, y = Y, color = Chemical, size = total_reading)) +
+  background_image(map2) +
+  geom_jitter(size = 2) +
+  scale_y_continuous(limits = c(0,200)) +
+  scale_x_continuous(limits = c(0,200))
 
 
 ## this code is directly from Lika Mikhelashvili via Slack 
