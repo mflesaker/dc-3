@@ -215,28 +215,6 @@ location_names <- traffic_data_clean%>%
   summarize(N = n())
 ```
 
-# Tracking car id 20150204100226-134
-
-```{r}
-# How to add gate name in the hover info
-# how to add background image
-traffic_data_coord%>%
-  filter(car_id == "20150204100226-134")%>%
-  plot_ly(
-    x = ~X,
-    y = ~Y,
-    color = ~factor(car_id),
-    frame = ~factor(time),
-    text = ~gate_name,
-    hoverinfo = "text",
-
-    #images = list(
-#source = "https://github.com/mflesaker/dc-3/blob/master/Lekagul%20Roadways%20labeled%20v2%20copy.jpg"
-#),
-    type = 'scatter',
-    mode = 'markers'
-  )
-```
 
 # Analyzing the key dates
 
@@ -328,3 +306,52 @@ graph_12_23
 ```
 
 **No records for 08/02, 12/02, 12/23**
+
+
+# Tracking car id 's
+
+"20151112031119-409"
+"20155201025245-696"
+"20152824032830-251"
+"20150416040441-902"
+"20152925022919-735"
+"20154907044911-419"
+"20150204100226-134"
+"20160623090611-424"
+"20153427103455-30"
+```{r}
+# How to add gate name in the hover info
+# how to add background image
+
+tracking_cars <- function(id){
+  traffic_data_coord%>%
+  filter(car_id == id)%>%
+  plot_ly(
+    x = ~X,
+    y = ~Y,
+    ids = ~factor(car_id),
+    frame = ~factor(time),
+    text = ~paste("Location:", gate_name, "\nCar ID:", car_id, "\nCar Type:", `car-type`),
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers'
+  )%>%   
+  layout(title = paste("Car ID:", id))
+}
+```
+
+
+```{r}
+track_id <- c("20151112031119-409",
+"20155201025245-696",
+"20152824032830-251",
+"20150416040441-902",
+"20152925022919-735",
+"20154907044911-419",
+"20150204100226-134",
+"20160623090611-424",
+"20153427103455-30")
+
+map(track_id, tracking_cars)
+```
+
