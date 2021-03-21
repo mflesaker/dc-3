@@ -9,7 +9,9 @@ editor_options:
 library(tidyverse)
 library(leaflet)
 library(lubridate)
-library(plotlye)
+library(plotly)
+library(jpeg)
+library(ggpubr)
 ```
 
 ```{r, warning = FALSE, message = FALSE}
@@ -273,10 +275,15 @@ anim_graph <- function(my_year, my_month, my_day){
 ```
 
 4/2/16, monitor 6, Methylosmolene
+
 4/9/16, monitor 6, Methylosmolene
+
 8/1/16, monitor 3, Methylosmolene
+
 8/2/16, monitor 2, Chlorodinine
+
 12/2/16, monitor 6, Methylosmolene
+
 12/23/16, monitor 6, Chlorodinine
 
 
@@ -311,20 +318,29 @@ graph_12_23
 # Tracking car id 's
 
 "20151112031119-409"
+
 "20155201025245-696"
+
 "20152824032830-251"
+
 "20150416040441-902"
+
 "20152925022919-735"
+
 "20154907044911-419"
+
 "20150204100226-134"
+
 "20160623090611-424"
+
 "20153427103455-30"
+
 ```{r}
 # How to add gate name in the hover info
 # how to add background image
 
 tracking_cars <- function(id){
-  traffic_data_coord%>%
+  p <- traffic_data_coord%>%
   filter(car_id == id)%>%
   plot_ly(
     x = ~X,
@@ -337,21 +353,22 @@ tracking_cars <- function(id){
     mode = 'markers'
   )%>%   
   layout(title = paste("Car ID:", id))
+  
+  p
 }
 ```
 
 
 ```{r}
-track_id <- c("20151112031119-409",
-"20155201025245-696",
-"20152824032830-251",
-"20150416040441-902",
-"20152925022919-735",
-"20154907044911-419",
-"20150204100226-134",
-"20160623090611-424",
-"20153427103455-30")
+tracking_cars("20151112031119-409")
+tracking_cars("20155201025245-696")
+tracking_cars("20152824032830-251")
+tracking_cars("20150416040441-902")
+tracking_cars("20152925022919-735")
+tracking_cars("20154907044911-419")
+tracking_cars("20150204100226-134")
+tracking_cars("20160623090611-424")
+tracking_cars("20153427103455-30")
 
-map(track_id, tracking_cars)
 ```
 
