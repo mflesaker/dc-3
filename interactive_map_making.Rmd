@@ -275,6 +275,8 @@ Dates to look at:
 
 ### 2016-04-02
 
+the graph with the grid: 
+
 ```{r}
 # different colors for different ids not showing up in the legend
 
@@ -334,6 +336,8 @@ data_04_02%>%
 
 ```
 
+
+General graph without the grid:
 ```{r}
 anim_graph <- function(my_year, my_month, my_day){
   dataname <- traffic_data_coord%>%
@@ -370,10 +374,16 @@ anim_graph <- function(my_year, my_month, my_day){
         sizing = "stretch",
         opacity = 1,
         layer = "below"
-         ),
+         ))
     ## --------
     
-    ## This code is directly from https://plotly.com/r/reference/layout/xaxis/ -----
+
+}
+```
+----
+Setting grid code:
+
+     ##This code is directly from https://plotly.com/r/reference/layout/xaxis/ -----
     xaxis = list(
       tickmode = 'linear',
            tick0 = 0,
@@ -384,9 +394,8 @@ anim_graph <- function(my_year, my_month, my_day){
            tick0 = 0,
       dtick = 20))
   
-  ## ------------------------
-}
-```
+
+  ----
 
 4/2/16, monitor 6, Methylosmolene
 
