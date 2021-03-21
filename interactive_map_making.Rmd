@@ -418,6 +418,15 @@ graph_04_02 <- anim_graph(2016, 04, 02)
 ```
 
 ```{r}
+data_04_08 <- traffic_data_coord %>%
+  filter(year(time) == 2016 & month(time)==04 & day(time) == 08)
+
+graph_04_08 <- anim_graph(2016, 04, 08)
+graph_04_08
+
+data_04_09 <- traffic_data_coord %>%
+  filter(year(time) == 2016 & month(time)==04 & day(time) == 09)
+
 graph_04_09 <- anim_graph(2016, 04, 09)
 graph_04_09
 ```
