@@ -237,12 +237,17 @@ sensor_data_w_locations %>%
 ## https://www.edureka.co/community/58999/add-image-background-to-ggplot
 ## https://www.engineeringbigdata.com/how-to-add-a-background-image-in-ggplot2-with-r/
 
- ggplot(sensor_data_w_locations, aes(x = X, y = Y, color = Chemical, size = total_reading)) +
+new_map <- ggplot(sensor_locations, aes(x = X, y = Y)) +
   background_image(map2) +
-  geom_jitter(size = 2) +
+  geom_point(color = "white", fill = "white", size = 1) +
   scale_y_continuous(limits = c(0,200)) +
-  scale_x_continuous(limits = c(0,200))
+  scale_x_continuous(limits = c(0,200)) +
+  geom_text(aes(label = monitor), color = "white", size = 2, nudge_x = 2, nudge_y = 5) +
+  theme(axis.line.x = element_blank(), axis.line.y = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank(), axis.ticks = element_blank(), axis.title = element_blank()) +
+# ^ geom_text https://intellipaat.com/community/7380/label-points-in-geompoint
+ ggsave("newmap.jpg", height = 7, width = 7.5) 
 
+new_map
 ## this code is directly from Lika Mikhelashvili via Slack 
 
 plot <- sensor_data_w_locations %>%
@@ -298,7 +303,9 @@ data_04_02%>%
     text = ~paste("Location:", gate_name, "\nCar ID:", car_id, "\nCar Type:", `car-type`),
     hoverinfo = "text",
     type = 'scatter',
-    mode = 'markers'
+    mode = 'markers',
+    width = 620,
+    height = 500
   )%>%
   layout(title = '2016-04-02',
          
@@ -306,7 +313,7 @@ data_04_02%>%
     ## additional help from https://community.plotly.com/t/add-a-background-image/2457
     
          images = list(
-           source = "https://raw.githubusercontent.com/mflesaker/dc-3/master/Lekagul%20Roadways%20labeled%20v2%20copy.jpg",
+           source = "https://raw.githubusercontent.com/mflesaker/dc-3/master/newmap.jpg",
         xref = "x",
         yref = "y",
         x = 0,
@@ -320,9 +327,6 @@ data_04_02%>%
     ## ----------------------------------------
     
     ## This code is directly from https://plotly.com/r/setting-graph-size/ --------- with adjustments made for width and height
-    autosize = F,
-    width = 620,
-    height = 500,
     ## --------
     
     ## This code is directly from https://plotly.com/r/reference/layout/xaxis/ -----
@@ -371,7 +375,7 @@ anim_graph <- function(my_year, my_month, my_day){
   )%>%
   layout(title = paste(my_year, "/", my_month, "/", my_day),
          images = list(
-           source = "https://raw.githubusercontent.com/mflesaker/dc-3/master/Lekagul%20Roadways%20labeled%20v2%20copy.jpg",
+           source = "https://raw.githubusercontent.com/mflesaker/dc-3/master/newmap.jpg",
         xref = "x",
         yref = "y",
         x = 0,
@@ -461,7 +465,7 @@ tracking_cars <- function(id){
   )%>%   
   layout(title = paste("Car ID:", id),
         images = list(
-        source = "https://raw.githubusercontent.com/mflesaker/dc-3/master/Lekagul%20Roadways%20labeled%20v2%20copy.jpg",
+        source = "https://raw.githubusercontent.com/mflesaker/dc-3/master/newmap.jpg",
         xref = "x",
         yref = "y",
         x = 0,
