@@ -1,0 +1,297 @@
+---
+title: "interactive_map"
+output: html_document
+---
+
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(leaflet)
+library(lubridate)
+library(plotly)
+library(jpeg)
+library(ggpubr)
+```
+
+```{r, warning = FALSE, message = FALSE}
+## load sensor data
+
+sensor_data <- read_csv("Sensor Data.csv")
+
+sensor_data_clean <- sensor_data %>%
+  rename(
+    time = `Date Time`
+  ) %>%
+  mutate(time = mdy_hm(time))
+```
+
+
+```{r, message = FALSE, warning = FALSE}
+## load traffic data
+
+traffic_data <- read_csv("Lekagul Sensor Data.csv")
+
+traffic_data_clean <- traffic_data %>%
+  rename(
+    time = Timestamp
+  ) %>%
+  mutate(time = ymd_hms(time))
+```
+
+
+```{r}
+
+## manually entering in the locations of the factories, which come from "Data Descriptions for Sensor Data.docx", in the Sensor Data file 
+
+## first, manually entering in the factory names
+
+factories <- data.frame(c("Roadrunner", "Kasios", "Radiance", "Indigo"))%>%
+  rename(location_name = c..Roadrunner....Kasios....Radiance....Indigo..)
+
+## then, manually entering in the X coordinates
+
+locationsX <- data.frame(c(89, 90, 109, 120)) %>%
+  rename(X = c.89..90..109..120.)
+
+## then, manually entering in the Y coordinates
+
+locationsY <- data.frame(c(27, 21, 26, 22)) %>%
+  rename(Y = c.27..21..26..22.)
+
+## finally, putting the three columns together so that the rows match up
+
+factory_locations <- cbind(factories, locationsX, locationsY) %>%
+  mutate(location_type = "factory")
+
+## manually entering in the locations of the sensors, which come from the "Data Descriptions for Sensor Data.docx", in the Sensor Data file
+
+## first, manually entering in the name of the sensors
+
+name <- data.frame(c(1,2,3,4,5,6,7,8,9)) %>%
+  rename(monitor = c.1..2..3..4..5..6..7..8..9.)
+
+## next, manually entering in the X locations of each sensor
+
+sensorLocX <- data.frame(c(62, 66, 76, 88, 103, 102, 89, 74, 119)) %>%
+  rename(X = c.62..66..76..88..103..102..89..74..119.)
+
+## then, manually entering in the Y locations of each sensor
+
+sensorLocY <- data.frame(c(21, 35, 41, 45, 43, 22, 3, 7, 42)) %>%
+  rename(Y = c.21..35..41..45..43..22..3..7..42.)
+
+## finally, putting the three columns together to form a data frame
+
+sensor_locations <- cbind(name, sensorLocX, sensorLocY) %>%
+  mutate(location_type = "sensor")
+
+# important_locations <-rbind(factory_locations, sensor_locations)
+```
+
+
+```{r}
+# adding the camping X and Y coordinates
+traffic_data_coord <- traffic_data_clean%>%
+  rename(car_id = `car-id`)%>%
+  rename(gate_name = `gate-name`)%>%
+  mutate(X = ifelse(gate_name == "camping5", 21,
+                    ifelse(gate_name == "camping0", 55,
+                           ifelse(gate_name== "camping1", 130,
+                              ifelse(gate_name=="camping2", 43,
+                                     ifelse(gate_name == "camping3", 43,
+                                            ifelse(gate_name == "camping4", 50,
+                                                   ifelse(gate_name == "camping6",150,
+                                                          ifelse(gate_name == "camping7", 180,
+                                                                 ifelse(gate_name == "camping8", 182,                                          
+          ifelse(gate_name == "entrance0", 61,
+                  ifelse(gate_name == "entrance1", 19,
+                         ifelse(gate_name== "entrance2", 182,
+                            ifelse(gate_name=="entrance3", 117,
+                                   ifelse(gate_name == "entrance4", 140,
+          ifelse(gate_name == "gate0", 63,
+                ifelse(gate_name == "gate1", 59,
+                       ifelse(gate_name== "gate2", 25,
+                          ifelse(gate_name=="gate3", 149,
+                                 ifelse(gate_name == "gate4", 163,
+                                        ifelse(gate_name == "gate5", 132,
+                                               ifelse(gate_name == "gate6", 118,
+                                                      ifelse(gate_name == "gate7", 97,
+                                                             ifelse(gate_name == "gate8", 139
+                                                                    ,
+          ifelse(gate_name == "general-gate0", 111,
+              ifelse(gate_name == "general-gate1", 64,
+                     ifelse(gate_name== "general-gate2", 103,
+                        ifelse(gate_name=="general-gate3", 185,
+                               ifelse(gate_name == "general-gate4", 70,
+                                      ifelse(gate_name == "general-gate5", 124,
+                                             ifelse(gate_name == "general-gate6", 138,
+                                                    ifelse(gate_name == "general-gate7", 65,
+                                                      
+          ifelse(gate_name == "ranger-base", 128,
+              ifelse(gate_name == "ranger-stop0", 90,
+                     ifelse(gate_name== "ranger-stop1", 20,
+                        ifelse(gate_name=="ranger-stop2", 80,
+                               ifelse(gate_name == "ranger-stop3", 148,
+                                      ifelse(gate_name == "ranger-stop4", 20,
+                                             ifelse(gate_name == "ranger-stop5", 152,
+                                                    ifelse(gate_name == "ranger-stop6", 122,
+                                                           ifelse(gate_name == "ranger-stop7", 100,                                0)))))))))))))))))))))))))))))))))))))))))%>%
+  mutate(Y = ifelse(gate_name == "camping5", 79,
+                    ifelse(gate_name == "camping0", 159,
+                           ifelse(gate_name== "camping1", 149,
+                              ifelse(gate_name=="camping2", 135,
+                                     ifelse(gate_name == "camping3", 133,
+                                            ifelse(gate_name == "camping4", 110,
+                                                   ifelse(gate_name == "camping6",23,
+                                                          ifelse(gate_name == "camping7", 55,
+                                                                 ifelse(gate_name == "camping8", 151,
+                                                                        
+          ifelse(gate_name == "entrance0", 185,
+                ifelse(gate_name == "entrance1", 131,
+                       ifelse(gate_name== "entrance2", 113,
+                          ifelse(gate_name=="entrance3", 32,
+                                 ifelse(gate_name == "entrance4", 18,
+                                        
+           ifelse(gate_name == "gate0", 165,
+                ifelse(gate_name == "gate1", 155,
+                       ifelse(gate_name== "gate2", 145,
+                          ifelse(gate_name=="gate3", 140,
+                                 ifelse(gate_name == "gate4", 85,
+                                        ifelse(gate_name == "gate5", 54,
+                                               ifelse(gate_name == "gate6", 48,
+                                                      ifelse(gate_name == "gate7", 40,
+                                                             ifelse(gate_name == "gate8", 20,
+                                                                    
+          ifelse(gate_name == "general-gate0", 190,
+            ifelse(gate_name == "general-gate1", 173,
+                   ifelse(gate_name== "general-gate2", 168,
+                      ifelse(gate_name=="general-gate3", 144,
+                             ifelse(gate_name == "general-gate4", 101,
+                                    ifelse(gate_name == "general-gate5", 88,
+                                           ifelse(gate_name == "general-gate6", 62,
+                                                  ifelse(gate_name == "general-gate7", 57,
+                                                         
+          ifelse(gate_name == "ranger-base", 25,
+              ifelse(gate_name == "ranger-stop0", 182,
+                     ifelse(gate_name== "ranger-stop1", 175,
+                        ifelse(gate_name=="ranger-stop2", 163,
+                               ifelse(gate_name == "ranger-stop3", 154,
+                                      ifelse(gate_name == "ranger-stop4", 105,
+                                             ifelse(gate_name == "ranger-stop5", 81,
+                                                    ifelse(gate_name == "ranger-stop6", 52,
+                                                           ifelse(gate_name == "ranger-stop7", 48,
+                                                                      0)))))))))))))))))))))))))))))))))))))))))
+```
+
+### The names of the locations and how many times they are repeated 
+
+```{r}
+location_names <- traffic_data_clean%>%
+  group_by(`gate-name`)%>%
+  summarize(N = n())
+```
+
+```{r}
+sensor_data_w_locations <- sensor_data_clean %>%
+   left_join(sensor_locations, by = c("Monitor" = "monitor")) %>%
+   select(-location_type)
+
+sensor_data_w_locations %>%
+  group_by(X, Y) %>%
+  summarize(
+    N = n()
+  )
+```
+
+# Analyzing the key dates
+
+Looking at these dates: 
+
+- 4/2/16, monitor 6, Methylosmolene
+
+- 4/9/16, monitor 6, Methylosmolene
+
+- 8/1/16, monitor 3, Methylosmolene
+
+- 8/2/16, monitor 2, Chlorodinine
+
+- 12/2/16, monitor 6, Methylosmolene
+
+- 12/23/16, monitor 6, Chlorodinine
+
+
+### 2016-04-02
+
+the graph with the grid: 
+
+```{r}
+# different colors for different ids not showing up in the legend
+
+data_04_02 <- traffic_data_coord%>%
+  filter(year(time) == 2016 & month(time)==04 & day(time) == 02)
+
+sensor_data_w_locations_4_2 <- sensor_data_w_locations %>%
+  filter(year(time) == 2016 & month(time)==04 & day(time) == 02) %>%
+  filter(Chemical == "Methylosmolene")
+
+data_04_02%>%
+  plot_ly(
+    x = ~X,
+    y = ~Y,
+    #ids = ~car_id,
+    color = ~factor(car_id),
+    frame = ~hour(time),
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers',
+    width = 620,
+    height = 500
+  )%>%
+  # https://rdrr.io/cran/plotly/man/add_trace.html 
+  # https://www.rdocumentation.org/packages/plotly/versions/4.9.3/topics/add_trace
+  add_trace(data = sensor_data_w_locations_4_2,
+    x = ~X,
+    y = ~Y,
+    frame = ~hour(time),
+    color = ~log(Reading),
+    hoverinfo = ~text,
+    type = 'scatter',
+    mode = 'markers'
+  ) %>%
+  layout(title = '2016-04-02',
+         
+    ## The following code is directly copied and pasted and minimally adapted from users Charlotte Sirot and Maxilmilian Peters on StackOverflow between 10/23/2016 and 2/12/2017 https://stackoverflow.com/questions/40204508/r-plotly-add-a-image-in-background
+    ## additional help from https://community.plotly.com/t/add-a-background-image/2457
+    
+         images = list(
+           source = "https://raw.githubusercontent.com/mflesaker/dc-3/master/newmap.jpg",
+        xref = "x",
+        yref = "y",
+        x = 0,
+        y = 200,
+        sizex = 200,
+        sizey = 200,
+        sizing = "stretch",
+        opacity = 1,
+        layer = "below"
+         ),
+    ## ----------------------------------------
+    
+    ## This code is directly from https://plotly.com/r/setting-graph-size/ --------- with adjustments made for width and height
+    ## --------
+    
+    ## This code is directly from https://plotly.com/r/reference/layout/xaxis/ -----
+    xaxis = list(
+      tickmode = 'linear',
+           tick0 = 0,
+      dtick = 20
+         ),
+    yaxis = list(
+      tickmode = 'linear',
+           tick0 = 0,
+      dtick = 20
+      ##------
+         )
+    ) 
+
+
+```
