@@ -50,15 +50,6 @@ traffic_data_clean <- traffic_data %>%
   mutate(time = ymd_hms(time))
 ```
 
-Dates to look at:
-
-4/2/16, monitor 6, Methylosmolene
-4/9/16, monitor 6, Methylosmolene
-8/1/16, monitor 3, Methylosmolene
-8/2/16, monitor 2, Chlorodinine
-12/2/16, monitor 6, Methylosmolene
-12/23/16, monitor 6, Chlorodinine
-
 
 ```{r}
 map2 <- readJPEG("Lekagul Roadways labeled v2 copy.jpg") 
@@ -236,15 +227,66 @@ traffic_data_coord%>%
     y = ~Y,
     color = ~factor(car_id),
     frame = ~factor(time),
-    images = list(
-source = "https://github.com/mflesaker/dc-3/blob/master/Lekagul%20Roadways%20labeled%20v2%20copy.jpg"
-),
+    text = ~gate_name,
+    hoverinfo = "text",
 
+    #images = list(
+#source = "https://github.com/mflesaker/dc-3/blob/master/Lekagul%20Roadways%20labeled%20v2%20copy.jpg"
+#),
     type = 'scatter',
     mode = 'markers'
   )
 ```
 
+# Analyzing the key dates
+
+Dates to look at:
+
+4/2/16, monitor 6, Methylosmolene
+4/9/16, monitor 6, Methylosmolene
+8/1/16, monitor 3, Methylosmolene
+8/2/16, monitor 2, Chlorodinine
+12/2/16, monitor 6, Methylosmolene
+12/23/16, monitor 6, Chlorodinine
+
+
+## 2016-04-02
+
+```{r}
+# different colors for different ids not showing up in the legend
+
+data_04_02 <- traffic_data_coord%>%
+  filter(year(time) == 2016 & month(time)==04 & day(time) == 02)
+
+data_04_02%>%
+  plot_ly(
+    x = ~X,
+    y = ~Y,
+    #ids = ~car_id,
+    color = ~factor(car_id),
+    frame = ~hour(time),
+    text = ~paste("Location: ", gate_name, "\nCar ID: ", car_id),
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers'
+  )
+```
+
+make_graph <- function(month1, chemical1){
+  dataname <- sensor_data_clean %>%
+  filter(month(time) == month1) %>%
+  filter(Chemical == chemical1) %>%
+  mutate(Monitor = as.factor(Monitor))
+
+  plot <- ggplot(dataname, aes(x = time, y = Reading, color = Monitor)) +
+    geom_line() +
+    scale_x_datetime(date_labels = "%m/%d") +
+    scale_y_continuous(
+      name = paste(chemical1, "reading in ppm", sep = " ")) +
+    scale_color_brewer(palette = "Set1")
+  
+  ggplotly(plot)
+}
 
 
 
