@@ -51,10 +51,7 @@ traffic_data_clean <- traffic_data %>%
   mutate(time = ymd_hms(time))
 ```
 
-
 ```{r}
-name <- data.frame(c(1,2,3,4,5,6,7,8,9)) %>%
-  rename(monitor = c.1..2..3..4..5..6..7..8..9.)
 map2 <- readJPEG("Lekagul Roadways labeled v2 copy.jpg") 
 ```
 
@@ -117,7 +114,6 @@ sensor_locations <- cbind(name, sensorLocX, sensorLocY) %>%
 
 #, breaks = c(0, 200, by = 10), 1
 #, breaks = c(0,200, by = 10), 1
-
 ```
 
 ```{r}
@@ -219,21 +215,6 @@ location_names <- traffic_data_clean%>%
 ```
 
 ```{r}
-sensorLocX <- data.frame(c(62, 66, 76, 88, 103, 102, 89, 74, 119)) %>%
-  rename(X = c.62..66..76..88..103..102..89..74..119.)
-
-## then, manually entering in the Y locations of each sensor
-
-sensorLocY <- data.frame(c(21, 35, 41, 45, 43, 22, 3, 7, 42)) %>%
-  rename(Y = c.21..35..41..45..43..22..3..7..42.)
-
-
-## finally, putting the three columns together to form a data frame
-sensor_locations <- cbind(name, sensorLocX, sensorLocY) %>%
-  mutate(location_type = "sensor")
-```
-
-```{r}
 sensor_data_w_locations <- sensor_data_clean %>%
    left_join(sensor_locations, by = c("Monitor" = "monitor")) %>%
    select(-location_type)
@@ -258,7 +239,6 @@ sensor_data_w_locations %>%
   geom_jitter(size = 2) +
   scale_y_continuous(limits = c(0,200)) +
   scale_x_continuous(limits = c(0,200))
-
 
 ## this code is directly from Lika Mikhelashvili via Slack 
 
