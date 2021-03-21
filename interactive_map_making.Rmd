@@ -1,7 +1,6 @@
 ---
 title: "interactive_map"
 output: html_document
-editor_options: 
 ---
 
 ```{r, message = FALSE, warning = FALSE}
@@ -288,7 +287,26 @@ data_04_02%>%
     type = 'scatter',
     mode = 'markers'
   )%>%
-  layout(title = '2016-04-02')
+  layout(title = '2016-04-02',
+         
+    ## The following code is directly copied and pasted and minimally adapted from users Charlotte Sirot and Maxilmilian Peters on StackOverflow between 10/23/2016 and 2/12/2017 https://stackoverflow.com/questions/40204508/r-plotly-add-a-image-in-background
+    ## additional help from https://community.plotly.com/t/add-a-background-image/2457
+    
+         images = list(
+           source = "https://raw.githubusercontent.com/mflesaker/dc-3/master/Lekagul%20Roadways%20labeled%20v2%20copy.jpg",
+        xref = "x",
+        yref = "y",
+        x = 0,
+        y = 200,
+        sizex = 200,
+        sizey = 200,
+        sizing = "stretch",
+        opacity = 1,
+        layer = "below"
+         )
+    ## ----------------------------------------
+    )
+
 ```
 
 ```{r}
