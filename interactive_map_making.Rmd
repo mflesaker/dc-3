@@ -263,14 +263,19 @@ plot
 ```
 # Analyzing the key dates
 
-Dates to look at:
+Looking at these dates: 
 
-4/2/16, monitor 6, Methylosmolene
-4/9/16, monitor 6, Methylosmolene
-8/1/16, monitor 3, Methylosmolene
-8/2/16, monitor 2, Chlorodinine
-12/2/16, monitor 6, Methylosmolene
-12/23/16, monitor 6, Chlorodinine
+- 4/2/16, monitor 6, Methylosmolene
+
+- 4/9/16, monitor 6, Methylosmolene
+
+- 8/1/16, monitor 3, Methylosmolene
+
+- 8/2/16, monitor 2, Chlorodinine
+
+- 12/2/16, monitor 6, Methylosmolene
+
+- 12/23/16, monitor 6, Chlorodinine
 
 
 ### 2016-04-02
@@ -336,9 +341,11 @@ data_04_02%>%
 
 ```
 
+### General function for tracking days
 
-General graph without the grid:
 ```{r}
+# need to get rid of the grid
+
 anim_graph <- function(my_year, my_month, my_day){
   dataname <- traffic_data_coord%>%
   filter(year(time) == my_year & month(time)==my_month & day(time) == my_day)
@@ -374,40 +381,15 @@ anim_graph <- function(my_year, my_month, my_day){
         sizing = "stretch",
         opacity = 1,
         layer = "below"
-         ))
+         ),
+    ## This code is directly from https://plotly.com/r/setting-graph-size/ --------- with adjustments made for width and height
+    autosize = F,
+    width = 620,
+    height = 500)
     ## --------
-    
 
 }
 ```
-----
-Setting grid code:
-
-     ##This code is directly from https://plotly.com/r/reference/layout/xaxis/ -----
-    xaxis = list(
-      tickmode = 'linear',
-           tick0 = 0,
-      dtick = 20
-         ),
-    yaxis = list(
-      tickmode = 'linear',
-           tick0 = 0,
-      dtick = 20))
-  
-
-  ----
-
-4/2/16, monitor 6, Methylosmolene
-
-4/9/16, monitor 6, Methylosmolene
-
-8/1/16, monitor 3, Methylosmolene
-
-8/2/16, monitor 2, Chlorodinine
-
-12/2/16, monitor 6, Methylosmolene
-
-12/23/16, monitor 6, Chlorodinine
 
 
 ```{r}
@@ -424,6 +406,8 @@ graph_04_09
 
 
 # Tracking car id 's
+
+id's we're looking at: 
 
 "20151112031119-409"
 
@@ -444,16 +428,13 @@ graph_04_09
 "20153427103455-30"
 
 ```{r}
-# How to add gate name in the hover info
-# how to add background image
-
 tracking_cars <- function(id){
   p <- traffic_data_coord%>%
   filter(car_id == id)%>%
   plot_ly(
     x = ~X,
     y = ~Y,
-    ids = ~factor(car_id),
+    color = ~factor(car_id),
     frame = ~factor(time),
     text = ~paste("Location:", gate_name, "\nCar ID:", car_id, "\nCar Type:", `car-type`),
     hoverinfo = "text",
