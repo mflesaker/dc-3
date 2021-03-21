@@ -343,9 +343,37 @@ anim_graph <- function(my_year, my_month, my_day){
     text = ~paste("Location:", gate_name, "\nCar ID:", car_id, "\nCar Type:", `car-type`),
     hoverinfo = "text",
     type = 'scatter',
-    mode = 'markers'
+    mode = 'markers',
+    width = 620,
+    height = 500
   )%>%
-  layout(title = paste(my_year, "/", my_month, "/", my_day))
+  layout(title = paste(my_year, "/", my_month, "/", my_day),
+         images = list(
+           source = "https://raw.githubusercontent.com/mflesaker/dc-3/master/Lekagul%20Roadways%20labeled%20v2%20copy.jpg",
+        xref = "x",
+        yref = "y",
+        x = 0,
+        y = 200,
+        sizex = 200,
+        sizey = 200,
+        sizing = "stretch",
+        opacity = 1,
+        layer = "below"
+         ),
+    ## --------
+    
+    ## This code is directly from https://plotly.com/r/reference/layout/xaxis/ -----
+    xaxis = list(
+      tickmode = 'linear',
+           tick0 = 0,
+      dtick = 20
+         ),
+    yaxis = list(
+      tickmode = 'linear',
+           tick0 = 0,
+      dtick = 20))
+  
+  ## ------------------------
 }
 ```
 
@@ -364,7 +392,7 @@ anim_graph <- function(my_year, my_month, my_day){
 
 ```{r}
 graph_04_02 <- anim_graph(2016, 04, 02)
-graph_04_02
+  graph_04_02
 ```
 
 ```{r}
