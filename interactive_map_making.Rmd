@@ -445,9 +445,29 @@ tracking_cars <- function(id){
     text = ~paste("Location:", gate_name, "\nCar ID:", car_id, "\nCar Type:", `car-type`),
     hoverinfo = "text",
     type = 'scatter',
-    mode = 'markers'
+    mode = 'markers',
+    width = 620,
+    height = 500
   )%>%   
-  layout(title = paste("Car ID:", id))
+  layout(title = paste("Car ID:", id),
+        images = list(
+        source = "https://raw.githubusercontent.com/mflesaker/dc-3/master/Lekagul%20Roadways%20labeled%20v2%20copy.jpg",
+        xref = "x",
+        yref = "y",
+        x = 0,
+        y = 200,
+        sizex = 200,
+        sizey = 200,
+        sizing = "stretch",
+        opacity = 1,
+        layer = "below"
+         ),
+        
+        ## x and y axis fixed code from https://plotly.com/r/axes/
+        xaxis = list(range = c(0, 200)),
+        yaxis = list(range = c(0, 200))
+        ## ------
+        )
   
   p
 }
