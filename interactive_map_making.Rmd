@@ -481,3 +481,22 @@ tracking_cars("20153427103455-30")
 
 ```
 
+# Looking at the sensor data on 2016-04-02
+
+```{r}
+sensor_data_w_locations %>%
+  filter(year(time) == 2016 & month(time)==04 & day(time) == 02)%>%
+  plot_ly(
+    x = ~X,
+    y = ~Y,
+    frame = ~hour(time),
+    color = ~Reading,
+    text = ~paste("Monitor:", Monitor, "\nChemical:", Chemical, "\nReading:", Reading),
+    hoverinfo = ~text,
+    type = "scatter",
+    mode = "markers"
+  )
+
+
+```
+
