@@ -303,8 +303,27 @@ data_04_02%>%
         sizing = "stretch",
         opacity = 1,
         layer = "below"
-         )
+         ),
     ## ----------------------------------------
+    
+    ## This code is directly from https://plotly.com/r/setting-graph-size/ --------- with adjustments made for width and height
+    autosize = F,
+    width = 620,
+    height = 500,
+    ## --------
+    
+    ## This code is directly from https://plotly.com/r/reference/layout/xaxis/ -----
+    xaxis = list(
+      tickmode = 'linear',
+           tick0 = 0,
+      dtick = 20
+         ),
+    yaxis = list(
+      tickmode = 'linear',
+           tick0 = 0,
+      dtick = 20
+      ##------
+         )
     )
 
 ```
