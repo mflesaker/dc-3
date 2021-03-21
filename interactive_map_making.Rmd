@@ -247,6 +247,8 @@ plot <- sensor_data_w_locations %>%
     y = ~Y,
     frame = ~hour(time),
     color = ~Reading,
+    text = ~paste("Monitor:", Monitor, "\nChemical:", Chemical, "\nReading:", Reading),
+    hoverinfo = ~text,
     type = "scatter",
     mode = "markers"
   )
