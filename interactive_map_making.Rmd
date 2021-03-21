@@ -405,21 +405,6 @@ graph_04_09 <- anim_graph(2016, 04, 09)
 graph_04_09
 ```
 
-```{r}
-graph_08_02 <- anim_graph(2016, 08, 02)
-graph_08_02
-```
-
-```{r}
-graph_12_02 <- anim_graph(2016, 12, 02)
-graph_12_02
-```
-
-```{r}
-graph_12_23 <- anim_graph(2016, 12, 23)
-graph_12_23
-```
-
 **No records for 08/02, 12/02, 12/23**
 
 
