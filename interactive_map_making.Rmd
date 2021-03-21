@@ -265,28 +265,66 @@ data_04_02%>%
     #ids = ~car_id,
     color = ~factor(car_id),
     frame = ~hour(time),
-    text = ~paste("Location: ", gate_name, "\nCar ID: ", car_id),
+    text = ~paste("Location:", gate_name, "\nCar ID:", car_id, "\nCar Type:", `car-type`),
     hoverinfo = "text",
     type = 'scatter',
     mode = 'markers'
-  )
+  )%>%
+  layout(title = '2016-04-02')
 ```
 
-make_graph <- function(month1, chemical1){
-  dataname <- sensor_data_clean %>%
-  filter(month(time) == month1) %>%
-  filter(Chemical == chemical1) %>%
-  mutate(Monitor = as.factor(Monitor))
-
-  plot <- ggplot(dataname, aes(x = time, y = Reading, color = Monitor)) +
-    geom_line() +
-    scale_x_datetime(date_labels = "%m/%d") +
-    scale_y_continuous(
-      name = paste(chemical1, "reading in ppm", sep = " ")) +
-    scale_color_brewer(palette = "Set1")
+```{r}
+anim_graph <- function(my_year, my_month, my_day){
+  dataname <- traffic_data_coord%>%
+  filter(year(time) == my_year & month(time)==my_month & day(time) == my_day)
   
-  ggplotly(plot)
+  plot <- dataname%>%
+    plot_ly(
+    x = ~X,
+    y = ~Y,
+    #ids = ~car_id,
+    color = ~factor(car_id),
+    frame = ~hour(time),
+    text = ~paste("Location:", gate_name, "\nCar ID:", car_id, "\nCar Type:", `car-type`),
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers'
+  )%>%
+  layout(title = paste(my_year, "/", my_month, "/", my_day))
 }
+```
+
+4/2/16, monitor 6, Methylosmolene
+4/9/16, monitor 6, Methylosmolene
+8/1/16, monitor 3, Methylosmolene
+8/2/16, monitor 2, Chlorodinine
+12/2/16, monitor 6, Methylosmolene
+12/23/16, monitor 6, Chlorodinine
 
 
+```{r}
+graph_04_02 <- anim_graph(2016, 04, 02)
+graph_04_02
+```
 
+```{r}
+graph_04_09 <- anim_graph(2016, 04, 09)
+graph_04_09
+```
+
+```{r}
+graph_08_02 <- anim_graph(2016, 08, 02)
+graph_08_02
+```
+
+```{r}
+graph_12_02 <- anim_graph(2016, 12, 02)
+graph_12_02
+```
+
+```{r}
+graph_12_23 <- anim_graph(2016, 12, 23)
+graph_12_23
+```
+
+**No records for 08/02, 12/02, 12/23**
