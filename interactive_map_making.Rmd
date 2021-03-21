@@ -7,6 +7,7 @@ output: html_document
 library(tidyverse)
 library(leaflet)
 library(lubridate)
+library(plotly)
 ```
 
 ```{r, warning = FALSE, message = FALSE}
@@ -48,8 +49,67 @@ traffic_data_clean <- traffic_data %>%
 ```
 
 
+```{r}
+name <- data.frame(c(1,2,3,4,5,6,7,8,9)) %>%
+  rename(monitor = c.1..2..3..4..5..6..7..8..9.)
+
+sensorLocX <- data.frame(c(62, 66, 76, 88, 103, 102, 89, 74, 119)) %>%
+  rename(X = c.62..66..76..88..103..102..89..74..119.)
+
+## then, manually entering in the Y locations of each sensor
+
+sensorLocY <- data.frame(c(21, 35, 41, 45, 43, 22, 3, 7, 42)) %>%
+  rename(Y = c.21..35..41..45..43..22..3..7..42.)
+
+## finally, putting the three columns together to form a data frame
+
+sensor_locations <- cbind(name, sensorLocX, sensorLocY) %>%
+  mutate(location_type = "sensor")
+
+sensor_data_w_locations_april_meth <- sensor_data_clean %>%
+  left_join(sensor_locations, by = c("Monitor" = "monitor")) %>%
+  select(-location_type) %>%
+  filter(month(time) == 4) %>%
+  filter(Chemical == "Methylosmolene")
+
+sensor_data_w_locations %>%
+  group_by(X, Y) %>%
+  summarize(
+    N = n()
+  )
+```
 
 
+```{r}
+## ggpubr and background_image function ideas and syntax come from code for DC-2 (file entitled dc-2-dataclean.Rmd, submitted by Michelle Flesaker); this code originally came from the following sources ---------------------
+## https://rpkgs.datanovia.com/ggpubr/reference/background_image.html
+## https://github.com/kassambara/ggpubr/blob/master/R/background_image.R
+## https://www.edureka.co/community/58999/add-image-background-to-ggplot
+## https://www.engineeringbigdata.com/how-to-add-a-background-image-in-ggplot2-with-r/
+
+# ggplot(sensor_data_w_locations, aes(x = X, y = Y, color = Chemical, size = total_reading)) +
+ # background_image(map) +
+ # geom_jitter(size = 2) +
+ # scale_y_continuous(limits = c(0,200)) +
+ # scale_x_continuous(limits = c(0,200))
+
+
+## this code is directly from Lika Mikhelashvili via Slack 
+
+plot <- sensor_data_w_locations %>%
+  plot_ly(
+    x = ~X,
+    y = ~Y,
+    frame = ~hour(time),
+    color = ~Reading,
+    type = "scatter",
+    mode = "markers"
+  )
+
+plot
+
+## -------------------
+```
 
 
 
