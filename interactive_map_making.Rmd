@@ -344,8 +344,13 @@ anim_graph <- function(my_year, my_month, my_day){
     hoverinfo = "text",
     type = 'scatter',
     mode = 'markers',
+    
+    ## code from https://plotly.com/r/setting-graph-size/ --------
+    
     width = 620,
     height = 500
+    
+    ## ----
   )%>%
   layout(title = paste(my_year, "/", my_month, "/", my_day),
          images = list(
