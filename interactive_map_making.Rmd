@@ -103,18 +103,6 @@ sensor_locations <- cbind(name, sensorLocX, sensorLocY) %>%
 # important_locations <-rbind(factory_locations, sensor_locations)
 ```
 
-
-```{r}
-# ggplot(important_locations, aes(x = X, y = Y, color = location_type)) +
- # background_image(map2) +
- # geom_point(size = 2) +
- # scale_y_continuous(limits = c(0,200)) +
- # scale_x_continuous(limits = c(0,200))
-
-#, breaks = c(0, 200, by = 10), 1
-#, breaks = c(0,200, by = 10), 1
-```
-
 ```{r}
 # adding the camping X and Y coordinates
 traffic_data_coord <- traffic_data_clean%>%
@@ -243,28 +231,12 @@ new_map <- ggplot(sensor_locations, aes(x = X, y = Y)) +
   scale_y_continuous(limits = c(0,200)) +
   scale_x_continuous(limits = c(0,200)) +
   geom_text(aes(label = monitor), color = "white", size = 2, nudge_x = 2, nudge_y = 5) +
+ # ^ geom_text addition comes from https://intellipaat.com/community/7380/label-points-in-geompoint
   theme(axis.line.x = element_blank(), axis.line.y = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank(), axis.ticks = element_blank(), axis.title = element_blank()) +
-# ^ geom_text https://intellipaat.com/community/7380/label-points-in-geompoint
+  ## ggsave idea and syntax from https://ggplot2.tidyverse.org/reference/ggsave.html
  ggsave("newmap.jpg", height = 7, width = 7.5) 
 
 new_map
-## this code is directly from Lika Mikhelashvili via Slack 
-
-plot <- sensor_data_w_locations %>%
-  plot_ly(
-    x = ~X,
-    y = ~Y,
-    frame = ~hour(time),
-    color = ~Reading,
-    text = ~paste("Monitor:", Monitor, "\nChemical:", Chemical, "\nReading:", Reading),
-    hoverinfo = ~text,
-    type = "scatter",
-    mode = "markers"
-  )
-
-plot
-
-## -------------------
 ```
 # Analyzing the key dates
 
@@ -293,6 +265,8 @@ the graph with the grid:
 data_04_02 <- traffic_data_coord%>%
   filter(year(time) == 2016 & month(time)==04 & day(time) == 02)
 
+## plotly code based on DC2 plot_ly code submitted by Lika Mikhelashvili 
+
 data_04_02%>%
   plot_ly(
     x = ~X,
@@ -304,8 +278,10 @@ data_04_02%>%
     hoverinfo = "text",
     type = 'scatter',
     mode = 'markers',
+    ## This code is directly from https://plotly.com/r/setting-graph-size/ --------- with adjustments made for width and height
     width = 620,
     height = 500
+        ## --------
   )%>%
   layout(title = '2016-04-02',
          
@@ -326,9 +302,7 @@ data_04_02%>%
          ),
     ## ----------------------------------------
     
-    ## This code is directly from https://plotly.com/r/setting-graph-size/ --------- with adjustments made for width and height
-    ## --------
-    
+
     ## This code is directly from https://plotly.com/r/reference/layout/xaxis/ -----
     xaxis = list(
       tickmode = 'linear',
@@ -365,9 +339,6 @@ anim_graph <- function(my_year, my_month, my_day){
     hoverinfo = "text",
     type = 'scatter',
     mode = 'markers',
-    
-    ## code from https://plotly.com/r/setting-graph-size/ --------
-    
     width = 620,
     height = 500
     
@@ -386,11 +357,6 @@ anim_graph <- function(my_year, my_month, my_day){
         opacity = 1,
         layer = "below"
          ),
-    ## This code is directly from https://plotly.com/r/setting-graph-size/ --------- with adjustments made for width and height
-    autosize = F,
-    width = 620,
-    height = 500,
-    ## --------
     ## This code is directly from https://plotly.com/r/reference/layout/xaxis/ -----
     xaxis = list(
       tickmode = 'linear',
@@ -485,8 +451,6 @@ tracking_cars <- function(id){
         opacity = 1,
         layer = "below"
          ),
-        
-        ## x and y axis fixed code from https://plotly.com/r/axes/
         xaxis = list(range = c(0, 200), showgrid = F),
         yaxis = list(range = c(0, 200), showgrid = F)
         ## ------
