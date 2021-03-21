@@ -385,9 +385,21 @@ anim_graph <- function(my_year, my_month, my_day){
     ## This code is directly from https://plotly.com/r/setting-graph-size/ --------- with adjustments made for width and height
     autosize = F,
     width = 620,
-    height = 500)
+    height = 500,
     ## --------
-
+    ## This code is directly from https://plotly.com/r/reference/layout/xaxis/ -----
+    xaxis = list(
+      tickmode = 'linear',
+           tick0 = 0,
+      dtick = 20, showgrid = F
+         ),
+    yaxis = list(
+      tickmode = 'linear',
+           tick0 = 0,
+      dtick = 20, showgrid = F
+      ##------
+    ))
+  plot
 }
 ```
 
@@ -458,11 +470,11 @@ tracking_cars <- function(id){
          ),
         
         ## x and y axis fixed code from https://plotly.com/r/axes/
-        xaxis = list(range = c(0, 200)),
-        yaxis = list(range = c(0, 200))
+        xaxis = list(range = c(0, 200), showgrid = F),
+        yaxis = list(range = c(0, 200), showgrid = F)
         ## ------
         )
-  
+
   p
 }
 ```
