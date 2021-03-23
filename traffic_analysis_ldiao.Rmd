@@ -1,0 +1,181 @@
+---
+title: "traffic_analysis_ldiao"
+author: "Lily Diao"
+date: "3/20/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(htmltools)
+library(shiny)
+library(leaflet)
+library(tidyr)
+```
+
+```{r}
+library(lubridate)
+library(tidyverse)
+library(jpeg)
+library(ggpubr)
+```
+
+# Vehicles in Restricted Locations in the Preserve
+We identified ranger-stop1, 3, 5, 6, and 7 are resttricted to regular vistors. There are gates in front of these ranger-stops that only allow entrance of rangers. We identified several car IDs that are unauthorized in the area. 
+
+```{r}
+Lekagul.Sensor.Data<-read.csv("Lekagul Sensor Data.csv")
+```
+
+```{r}
+bad_car<-Lekagul.Sensor.Data %>% 
+  filter(car.type==1 | car.type==2 | car.type==3 | car.type==4 | car.type==5) %>% 
+  filter(gate.name=="ranger-stop7" | gate.name=="ranger-stop1" | gate.name=="ranger-stop6" | gate.name=="ranger-stop3" | gate.name=="ranger-stop5")
+```
+
+These 29 cars are all being observed in the retricted area.
+```{r}
+bad_car %>% distinct(car.id) 
+```
+
+# Suspicious Car 1 in Restricted Area: Trespassing Ranger-stop3 & 6
+
+We suspected that the movements of the first six ids on the previous list all belong to Car 1. The six entries of movements across six different days are exactly the same as shown in the image. We suspected that this might be the same car performing illegal activities in the preserve on 2015-05-01, 2015-06-25, 2015-07-07,  2015-11-12, 2015-12-01, and 2015-12-24. 
+
+```{r}
+car_1<-Lekagul.Sensor.Data %>% 
+  filter(car.id=="20151112031119-409")
+car_1
+```
+
+```{r}
+car_2<-Lekagul.Sensor.Data %>% 
+  filter(car.id=="20155201025245-696")
+```
+
+```{r}
+car_3<-Lekagul.Sensor.Data %>% 
+  filter(car.id=="20152824032830-251")
+```
+
+```{r}
+car_4<-Lekagul.Sensor.Data %>% 
+  filter(car.id=="20150416040441-902")
+```
+
+```{r}
+car_5<-Lekagul.Sensor.Data %>% 
+  filter(car.id=="20152925022919-735")
+```
+
+```{r}
+car_6<-Lekagul.Sensor.Data %>% 
+  filter(car.id=="20154907044911-419")
+```
+
+
+# Suspicious Car 2, 3, & 4: Entering Ticket Not Surrendered after Exit for Entrance 1 & 2
+
+The following two cars exhibit similar patterns entering from Entrance 1. Car 2(20150204100226-134) enters and exit Entrance 1 within five seconds at 2015-07-04 22:02:26. It enters Entrance 1 again the next morning at 2015-07-05 07:44:50 with the same car id. However, each vehicle should surrenders their entry ticket when exiting the Preserve and the exit is recorded. The patter is similar for Car 3(20160623090611-424) and Car 4(20153427103455-30).
+
+```{r}
+entrance1<-Lekagul.Sensor.Data %>% 
+  filter(gate.name=="entrance1") %>% 
+  group_by(car.id) %>% 
+  summarise(count=n()) %>% 
+  arrange(desc(count))
+```
+
+```{r}
+car_8<-Lekagul.Sensor.Data %>% 
+  filter(car.id=="20150204100226-134")
+car_8
+```
+
+
+```{r}
+car_9<-Lekagul.Sensor.Data %>% 
+  filter(car.id=="20160623090611-424")
+```
+
+```{r}
+entrance2<-Lekagul.Sensor.Data %>% 
+  filter(gate.name=="entrance2") %>% 
+  group_by(car.id) %>% 
+  summarise(count=n()) %>% 
+  arrange(desc(count))
+```
+
+
+```{r}
+car_10<-Lekagul.Sensor.Data %>% 
+  filter(car.id=="20153427103455-30")
+```
+
+<!-- # Change in Movement Cross Time -->
+
+<!-- ```{r} -->
+<!-- count_preserve<-Lekagul.Sensor.Data %>% -->
+<!--   group_by(Timestamp) %>% -->
+<!--   summarise(count=n()) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- p_count_preserve <- count_preserve %>% -->
+<!--   plot_ly(x = ~Timestamp, y = ~count) %>% -->
+<!--   add_lines(alpha = 0.4) -->
+
+<!-- p_count_preserve -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- max_move<-Lekagul.Sensor.Data %>% -->
+<!--   filter(as.POSIXct(Timestamp) >= as.POSIXct('2015-07-31 00:00:00') & as.POSIXct(Timestamp) <= as.POSIXct('2015-07-31 23:59:59')) %>% -->
+<!--   group_by(car.id) %>% -->
+<!--   summarise(count=n()) %>% -->
+<!--   arrange(desc(count)) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- move_count_crime<-park.movement.Sun %>% -->
+<!--   filter(as.POSIXct(Timestamp)>= as.POSIXct('2014-6-08 15:33:00') & as.POSIXct(Timestamp) <= as.POSIXct('2014-6-08 16:19:00')) %>% -->
+<!--   select(id, type, X, Y) %>% -->
+<!--   group_by(id) %>% -->
+<!--   summarise(count=n()) %>% -->
+<!--   arrange(desc(count)) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- car_12<-Lekagul.Sensor.Data %>% -->
+<!--   filter(car.id=="20154431104413-67") -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- car_12<-Lekagul.Sensor.Data %>% -->
+<!--   filter(car.id=="20154831074838-917") -->
+<!-- ``` -->
+
+<!-- # Regular Commers -->
+
+<!-- We want to see whehter certain vehicle appears at the entrance for multiple times in order to identitfy certain abnormaties. -->
+
+
+# ```{r}
+# entrance3<-Lekagul.Sensor.Data %>% 
+#   filter(gate.name=="entrance3") %>% 
+#   group_by(car.id) %>% 
+#   summarise(count=n()) %>% 
+#   arrange(desc(count))
+# ```
+# 
+# 
+# ```{r}
+# car_11<-Lekagul.Sensor.Data %>% 
+#   filter(car.id=="20154501084537-684")
+# ```
