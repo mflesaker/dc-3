@@ -25,19 +25,6 @@ sensor_data_clean <- sensor_data %>%
 ```
 
 
-```{r, warning = FALSE, message = FALSE}
-## load meteorological data
-
-weather_data <- read_csv("Meteorological Data.csv")
-
-weather_data_clean <- weather_data %>%
-  rename(
-    time = Date 
-  ) %>%
-  mutate(time = mdy_hm(time))
-```
-
-
 ```{r, message = FALSE, warning = FALSE}
 ## load traffic data
 
@@ -50,9 +37,6 @@ traffic_data_clean <- traffic_data %>%
   mutate(time = ymd_hms(time))
 ```
 
-```{r}
-map2 <- readJPEG("Lekagul Roadways labeled v2 copy.jpg") 
-```
 
 ```{r}
 
@@ -102,6 +86,7 @@ sensor_locations <- cbind(name, sensorLocX, sensorLocY) %>%
 
 # important_locations <-rbind(factory_locations, sensor_locations)
 ```
+
 
 ```{r}
 # adding the camping X and Y coordinates
@@ -217,27 +202,6 @@ sensor_data_w_locations %>%
   )
 ```
 
-
-```{r}
-## ggpubr and background_image function ideas and syntax come from code for DC-2 (file entitled dc-2-dataclean.Rmd, submitted by Michelle Flesaker); this code originally came from the following sources ---------------------
-## https://rpkgs.datanovia.com/ggpubr/reference/background_image.html
-## https://github.com/kassambara/ggpubr/blob/master/R/background_image.R
-## https://www.edureka.co/community/58999/add-image-background-to-ggplot
-## https://www.engineeringbigdata.com/how-to-add-a-background-image-in-ggplot2-with-r/
-
-new_map <- ggplot(sensor_locations, aes(x = X, y = Y)) +
-  background_image(map2) +
-  geom_point(color = "white", fill = "white", size = 1) +
-  scale_y_continuous(limits = c(0,200)) +
-  scale_x_continuous(limits = c(0,200)) +
-  geom_text(aes(label = monitor), color = "white", size = 2, nudge_x = 2, nudge_y = 5) +
- # ^ geom_text addition comes from https://intellipaat.com/community/7380/label-points-in-geompoint
-  theme(axis.line.x = element_blank(), axis.line.y = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank(), axis.ticks = element_blank(), axis.title = element_blank()) +
-  ## ggsave idea and syntax from https://ggplot2.tidyverse.org/reference/ggsave.html
- ggsave("newmap.jpg", height = 7, width = 7.5) 
-
-new_map
-```
 # Analyzing the key dates
 
 Looking at these dates: 
@@ -265,7 +229,9 @@ the graph with the grid:
 data_04_02 <- traffic_data_coord%>%
   filter(year(time) == 2016 & month(time)==04 & day(time) == 02)
 
-## plotly code based on DC2 plot_ly code submitted by Lika Mikhelashvili 
+sensor_data_w_locations_4_2 <- sensor_data_w_locations %>%
+  filter(year(time) == 2016 & month(time)==04 & day(time) == 02) %>%
+  filter(Chemical == "Methylosmolene")
 
 data_04_02%>%
   plot_ly(
@@ -274,15 +240,23 @@ data_04_02%>%
     #ids = ~car_id,
     color = ~factor(car_id),
     frame = ~hour(time),
-    text = ~paste("Location:", gate_name, "\nCar ID:", car_id, "\nCar Type:", `car-type`),
     hoverinfo = "text",
     type = 'scatter',
     mode = 'markers',
-    ## This code is directly from https://plotly.com/r/setting-graph-size/ --------- with adjustments made for width and height
     width = 620,
     height = 500
-        ## --------
   )%>%
+  # https://rdrr.io/cran/plotly/man/add_trace.html 
+  # https://www.rdocumentation.org/packages/plotly/versions/4.9.3/topics/add_trace
+  add_trace(data = sensor_data_w_locations_4_2,
+    x = ~X,
+    y = ~Y,
+    frame = ~hour(time),
+    color = ~log(Reading),
+    hoverinfo = ~text,
+    type = 'scatter',
+    mode = 'markers'
+  ) %>%
   layout(title = '2016-04-02',
          
     ## The following code is directly copied and pasted and minimally adapted from users Charlotte Sirot and Maxilmilian Peters on StackOverflow between 10/23/2016 and 2/12/2017 https://stackoverflow.com/questions/40204508/r-plotly-add-a-image-in-background
@@ -302,7 +276,9 @@ data_04_02%>%
          ),
     ## ----------------------------------------
     
-
+    ## This code is directly from https://plotly.com/r/setting-graph-size/ --------- with adjustments made for width and height
+    ## --------
+    
     ## This code is directly from https://plotly.com/r/reference/layout/xaxis/ -----
     xaxis = list(
       tickmode = 'linear',
@@ -315,181 +291,7 @@ data_04_02%>%
       dtick = 20
       ##------
          )
-    )
-
-```
-
-### General function for tracking days
-
-```{r}
-# need to get rid of the grid
-
-anim_graph <- function(my_year, my_month, my_day){
-  dataname <- traffic_data_coord%>%
-  filter(year(time) == my_year & month(time)==my_month & day(time) == my_day)
-  
-  plot <- dataname%>%
-    plot_ly(
-    x = ~X,
-    y = ~Y,
-    #ids = ~car_id,
-    color = ~factor(car_id),
-    frame = ~hour(time),
-    text = ~paste("Location:", gate_name, "\nCar ID:", car_id, "\nCar Type:", `car-type`),
-    hoverinfo = "text",
-    type = 'scatter',
-    mode = 'markers',
-    width = 620,
-    height = 500
-    
-    ## ----
-  )%>%
-  layout(title = paste(my_year, "/", my_month, "/", my_day),
-         images = list(
-           source = "https://raw.githubusercontent.com/mflesaker/dc-3/master/newmap.jpg",
-        xref = "x",
-        yref = "y",
-        x = 0,
-        y = 200,
-        sizex = 200,
-        sizey = 200,
-        sizing = "stretch",
-        opacity = 1,
-        layer = "below"
-         ),
-    ## This code is directly from https://plotly.com/r/reference/layout/xaxis/ -----
-    xaxis = list(
-      tickmode = 'linear',
-           tick0 = 0,
-      dtick = 20, 
-    ## ------
-    ## showgrid for x and y from https://stackoverflow.com/questions/40720305/horizontal-grid-lines-in-plotly-r
-      showgrid = F
-    ## ---
-         ),
-    yaxis = list(
-      tickmode = 'linear',
-           tick0 = 0,
-      dtick = 20, showgrid = F
-      ##------
-    ))
-  plot
-}
-```
-
-
-```{r}
-graph_04_02 <- anim_graph(2016, 04, 02)
-  graph_04_02
-```
-
-```{r}
-data_04_08 <- traffic_data_coord %>%
-  filter(year(time) == 2016 & month(time)==04 & day(time) == 08)
-
-graph_04_08 <- anim_graph(2016, 04, 08)
-graph_04_08
-
-data_04_09 <- traffic_data_coord %>%
-  filter(year(time) == 2016 & month(time)==04 & day(time) == 09)
-
-graph_04_09 <- anim_graph(2016, 04, 09)
-graph_04_09
-```
-
-**No records for 08/02, 12/02, 12/23**
-
-
-# Tracking car id 's
-
-id's we're looking at: 
-
-"20151112031119-409"
-
-"20155201025245-696"
-
-"20152824032830-251"
-
-"20150416040441-902"
-
-"20152925022919-735"
-
-"20154907044911-419"
-
-"20150204100226-134"
-
-"20160623090611-424"
-
-"20153427103455-30"
-
-```{r}
-tracking_cars <- function(id){
-  p <- traffic_data_coord%>%
-  filter(car_id == id)%>%
-  plot_ly(
-    x = ~X,
-    y = ~Y,
-    color = ~factor(car_id),
-    frame = ~factor(time),
-    text = ~paste("Location:", gate_name, "\nCar ID:", car_id, "\nCar Type:", `car-type`),
-    hoverinfo = "text",
-    type = 'scatter',
-    mode = 'markers',
-    width = 620,
-    height = 500
-  )%>%   
-  layout(title = paste("Car ID:", id),
-        images = list(
-        source = "https://raw.githubusercontent.com/mflesaker/dc-3/master/newmap.jpg",
-        xref = "x",
-        yref = "y",
-        x = 0,
-        y = 200,
-        sizex = 200,
-        sizey = 200,
-        sizing = "stretch",
-        opacity = 1,
-        layer = "below"
-         ),
-        xaxis = list(range = c(0, 200), showgrid = F),
-        yaxis = list(range = c(0, 200), showgrid = F)
-        ## ------
-        )
-
-  p
-}
-```
-
-
-```{r}
-tracking_cars("20151112031119-409")
-tracking_cars("20155201025245-696")
-tracking_cars("20152824032830-251")
-tracking_cars("20150416040441-902")
-tracking_cars("20152925022919-735")
-tracking_cars("20154907044911-419")
-tracking_cars("20150204100226-134")
-tracking_cars("20160623090611-424")
-tracking_cars("20153427103455-30")
-
-```
-
-# Looking at the sensor data on 2016-04-02
-
-```{r}
-sensor_data_w_locations %>%
-  filter(year(time) == 2016 & month(time)==04 & day(time) == 02)%>%
-  plot_ly(
-    x = ~X,
-    y = ~Y,
-    frame = ~hour(time),
-    color = ~Reading,
-    text = ~paste("Monitor:", Monitor, "\nChemical:", Chemical, "\nReading:", Reading),
-    hoverinfo = ~text,
-    type = "scatter",
-    mode = "markers"
-  )
+    ) 
 
 
 ```
-
